@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "Application.h"
+#include "utilities/Settings.h"
 
 int main()
 {
@@ -10,7 +11,8 @@ int main()
 	if (!glfwInit())
 		return -1;
 
-	window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+	Settings settings;
+	window = glfwCreateWindow(settings.getWidth(), settings.getHeight(), "Hello World", NULL, NULL);	// maybe lock the resolution?
 
 	if (!window)
 	{
