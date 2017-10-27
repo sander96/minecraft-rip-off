@@ -1,6 +1,7 @@
 bin/
 intermediates/
 .vs/
+lib/
 *.vcxproj
 *.filters
 *.user
