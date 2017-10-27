@@ -1,8 +1,12 @@
 #include "Application.h"
+#include <chrono>
+
+using Clock = std::chrono::steady_clock;
 
 Application::Application(GLFWwindow* windowHandle)
 	:
-	window{ windowHandle }
+	window{ windowHandle },
+	playState{}
 {
 
 }
@@ -11,19 +15,25 @@ void Application::run()
 {
 	glClearColor(0.5, 0.65, 1.0, 1.0);	// temporary background/sky colour
 
+	auto time = Clock::now();
+	std::chrono::nanoseconds accumulator{ 0 };
+	std::chrono::nanoseconds timestep{ 16666667 };	// 60 updates per second
+
 	while (!glfwWindowShouldClose(window))
 	{
-		glClear(GL_COLOR_BUFFER_BIT);
+		auto time2 = Clock::now();
+		auto dt = time2 - time;
+		time = time2;
+		accumulator += dt;
 
-		glBegin(GL_TRIANGLES);
+		playState.processInput(window);		// input processing
 
-		glVertex2f(-0.5f, -0.5f);
-		glVertex2f(0.0f, 0.5f);
-		glVertex2f(0.5f, -0.5f);
-		glEnd();
+		while (accumulator >= timestep)
+		{
+			accumulator -= timestep;
+			playState.update(window);		// game state updating
+		}
 
-		glfwSwapBuffers(window);
-
-		glfwPollEvents();
+		playState.render(window);			// game state rendering
 	}
 }

@@ -2,6 +2,7 @@
 #define APPLICATION_H
 
 #include <GLFW/glfw3.h>
+#include "PlayState.h"
 
 class Application
 {
@@ -11,6 +12,7 @@ public:
 
 private:
 	GLFWwindow* window;
+	PlayState playState;
 };
 
 #endif

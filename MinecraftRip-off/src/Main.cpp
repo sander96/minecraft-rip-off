@@ -12,7 +12,7 @@ int main()
 		return -1;
 
 	Settings settings;
-	window = glfwCreateWindow(settings.getWidth(), settings.getHeight(), "Hello World", NULL, NULL);	// maybe lock the resolution?
+	window = glfwCreateWindow(settings.getWidth(), settings.getHeight(), "Minecraft rip-off", NULL, NULL);
 
 	if (!window)
 	{
