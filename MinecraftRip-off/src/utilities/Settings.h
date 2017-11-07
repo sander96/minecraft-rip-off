@@ -8,12 +8,14 @@ public:
 
 	unsigned getWidth() { return width; }
 	unsigned getHeight() { return height; }
-	int getFov() { return fov; }
+	float getFov() { return fov; }
+	float getSensitivity() { return sensitivity; }
 
 private:
 	unsigned width;
 	unsigned height;
-	int fov;
+	float fov;
+	float sensitivity;
 };
 
 #endif

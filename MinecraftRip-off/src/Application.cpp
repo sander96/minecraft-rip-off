@@ -1,12 +1,13 @@
 #include "Application.h"
 #include <chrono>
+#include <iostream>
 
 using Clock = std::chrono::steady_clock;
 
 Application::Application(GLFWwindow* windowHandle)
 	:
 	window{ windowHandle },
-	playState{}
+	playState{ windowHandle }
 {
 
 }
@@ -26,11 +27,12 @@ void Application::run()
 		time = time2;
 		accumulator += dt;
 
-		playState.processInput(window);		// input processing
+		glfwPollEvents();
 
 		while (accumulator >= timestep)
 		{
 			accumulator -= timestep;
+			playState.processInput(window);		// input processing
 			playState.update(window);		// game state updating
 		}
 

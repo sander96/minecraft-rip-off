@@ -26,5 +26,9 @@ Settings::Settings()
 		{
 			fov = std::stoi(value);
 		}
+		else if (identifier == "sensitivity")
+		{
+			sensitivity = std::stoi(value);
+		}
 	}
 }
