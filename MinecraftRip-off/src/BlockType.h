@@ -3,7 +3,7 @@
 
 enum class BlockType
 {
-	Air, Dirt, Cobblestone;
+	Air, Dirt, Cobblestone
 };
 
 #endif
