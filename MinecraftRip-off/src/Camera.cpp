@@ -38,9 +38,9 @@ void Camera::move(glm::vec3 movement)
 
 void Camera::rotate(glm::vec2 rotation)
 {
+	//OTI ARVAMUS, kaameral on see viga, et on world axisi järgi rotate, kuidagi localiks?
 	lookAt = glm::rotate(glm::mat4(1.0f), glm::radians(rotation[0]), glm::vec3(0.0, 1.0, 0.0)) * glm::vec4(lookAt, 0.0);
 	lookAt = glm::rotate(glm::mat4(1.0f), glm::radians(rotation[1]), glm::vec3(1.0, 0.0, 0.0)) * glm::vec4(lookAt, 0.0);
-
 	view = glm::lookAt(
 		position,
 		lookAt + position,

@@ -3,6 +3,14 @@
 */
 #include "Texture_util.h"
 
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <IL/il.h>
+#include <IL/ilu.h>
+#include <IL/ilut.h>
+
+#include <iostream>
+
 using namespace std;
 
 bool is_texture_util_inited = false;
@@ -73,8 +81,8 @@ GLuint load_texture(GLenum target, GLint internalFormat, const char* filename) {
 	//glTexParameterf(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_LINEAR);
 
 
 
