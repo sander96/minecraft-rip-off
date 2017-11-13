@@ -17,18 +17,11 @@ out vec3 interpolatedPosition;
 out vec2 interpolatedUv;
 
 void main(void) {
-    mat4 modelViewMatrix = viewMatrix * modelMatrix;
-    mat3 normalMatrix = transpose(inverse(mat3(modelViewMatrix)));
+	mat4 modelViewMatrix = viewMatrix * modelMatrix;
+	mat3 normalMatrix = transpose(inverse(mat3(modelViewMatrix)));
 
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    interpolatedNormal = normalMatrix * normal;
-    interpolatedPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
-
-    //Assign the uv coordinate value to be interpolated
-    /**
-     * --Task--
-     * Interpolate the UV coordinates
-     */
-    interpolatedUv = uv;
-    vec2 removeThisLine = uv;
+	gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+	interpolatedNormal = normalMatrix * normal;
+	interpolatedPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
+	interpolatedUv = uv;
 }

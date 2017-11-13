@@ -131,6 +131,9 @@
       <AdditionalLibraryDirectories>$(SolutionDir)lib\DEVIL\lib\x86\Release;$(SolutionDir)lib\GLFW\lib-vc2015;$(SolutionDir)lib\GLEW\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;glew32s.lib;opengl32.lib;DevIL.lib;ILU.lib;ILUT.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>XCOPY "$(SolutionDir)"\lib\DEVIL\lib\x86\Release\*.DLL "$(TargetDir)" /D /K /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -156,21 +159,32 @@
     <ClCompile Include="src\PlayState.cpp" />
     <ClCompile Include="src\utilities\Settings.cpp" />
     <ClCompile Include="src\utilities\Shader_util.cpp" />
+    <ClCompile Include="src\utilities\ResourceManager.cpp" />
     <ClCompile Include="src\utilities\Texture_util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\BlockType.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Application.h" />
     <ClInclude Include="src\PlayState.h" />
     <ClInclude Include="src\utilities\Settings.h" />
     <ClInclude Include="src\utilities\Shader_util.h" />
+    <ClInclude Include="src\utilities\ResourceManager.h" />
     <ClInclude Include="src\utilities\Texture_util.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\settings.cfg" />
     <None Include="resources\shaders\default.frag.glsl" />
     <None Include="resources\shaders\default.vert.glsl" />
+    <None Include="resources\shaders\texture.frag.glsl" />
+    <None Include="resources\shaders\texture.vert.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\textures\blocks\stone.png" />
+    <Image Include="resources\textures\blocks\leaves.png" />
+    <Image Include="resources\textures\blocks\sand.png" />
+    <Image Include="resources\textures\blocks\dirt.png" />
+    <Image Include="resources\textures\blocks\grass.png" />
+    <Image Include="resources\textures\blocks\wood.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

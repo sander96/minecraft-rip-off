@@ -7,6 +7,7 @@
 #include "utilities/Shader_util.h"
 #include "Camera.h"
 #include "utilities/Settings.h"
+#include "utilities/ResourceManager.h"
 
 class PlayState
 {
@@ -19,11 +20,10 @@ public:
 
 private:
 	Camera camera;
-	GLuint testTriangleVAO;	// remove this when not needed anymore
-	shader_prog shader;	// temp, create shaderManager
 	double mousePosX;
 	double mousePosY;
 	Settings settings;
+	ResourceManager resourceManager;
 };
 
 #endif
