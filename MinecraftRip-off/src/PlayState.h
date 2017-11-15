@@ -23,7 +23,7 @@ private:
 	double mousePosX;
 	double mousePosY;
 	Settings settings;
-	ResourceManager resourceManager;
+	ResourceManager* resourceManager;
 };
 
 #endif

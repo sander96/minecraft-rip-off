@@ -85,9 +85,8 @@ GLuint createCube(shader_prog* shader) {
 }
 
 PlayState::PlayState(GLFWwindow* window)
-	:
-	resourceManager{}
 {
+	resourceManager = &ResourceManager::getInstance();
 	glfwSetCursorPos(window, settings.getWidth() / 2.0, settings.getHeight() / 2.0);
 }
 
@@ -127,18 +126,18 @@ void PlayState::update(GLFWwindow* window)
 }
 
 //assigns a texture to a cube and displays it
-void makeBlock(Block block, ResourceManager resourceManager) {
+void makeBlock(Block block, ResourceManager* resourceManager) {
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, resourceManager.getTextureHandle(block));
+	glBindTexture(GL_TEXTURE_2D, resourceManager->getTextureHandle(block));
 	//call out for making a cube.
-	shader_prog* shader = &resourceManager.getShaderHandle(Shader::Texture);
+	shader_prog* shader = &resourceManager->getShaderHandle(Shader::Texture);
 	glBindVertexArray(createCube(shader));
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
 void PlayState::render(GLFWwindow* window)
 {
-	shader_prog& shaderCube = resourceManager.getShaderHandle(Shader::Texture);
+	shader_prog& shaderCube = resourceManager->getShaderHandle(Shader::Texture);
 
 	glEnable(GL_CULL_FACE);
 	glClear(GL_COLOR_BUFFER_BIT);

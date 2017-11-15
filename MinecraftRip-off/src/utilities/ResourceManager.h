@@ -20,12 +20,19 @@ enum class Shader
 class ResourceManager
 {
 public:
-	ResourceManager();
+	ResourceManager(const ResourceManager&) = delete;
+	ResourceManager(ResourceManager&&) = delete;
+	ResourceManager& operator=(const ResourceManager&) = delete;
+	ResourceManager& operator=(ResourceManager&&) = delete;
+
+	static ResourceManager& getInstance();
 
 	const GLuint getTextureHandle(Block block) { return textureHandles[block]; }
-	shader_prog& getShaderHandle(Shader shader) { return shaderHandles.find(shader)->second; }
+	shader_prog& getShaderHandle(Shader shader) { return shaderHandles.find(shader)->second; }	// maybe const somehow?
 
 private:
+	ResourceManager();
+
 	void loadTextures();
 	void loadShaders();
 

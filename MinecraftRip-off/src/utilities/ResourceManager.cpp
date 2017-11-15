@@ -1,6 +1,7 @@
 #include "ResourceManager.h"
 #include <iostream>
 
+
 ResourceManager::ResourceManager()
 {
 	loadTextures();
@@ -8,6 +9,12 @@ ResourceManager::ResourceManager()
 
 	loadShaders();
 	std::cout << "Shaders loaded count: " << shaderHandles.size() << std::endl;
+}
+
+ResourceManager& ResourceManager::getInstance()
+{
+	static ResourceManager resourceManager;
+	return resourceManager;
 }
 
 void ResourceManager::loadTextures()
