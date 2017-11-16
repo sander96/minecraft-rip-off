@@ -5,11 +5,7 @@
 #include <GL/glew.h>
 #include "Shader_util.h"
 #include "Texture_util.h"
-
-enum class Block
-{
-	Dirt, Sand, Grass, Stone, Wood, Leaves
-};
+#include "../block/Block.h"
 
 enum class Shader
 {
@@ -28,7 +24,7 @@ public:
 	static ResourceManager& getInstance();
 
 	const GLuint getTextureHandle(Block block) { return textureHandles[block]; }
-	shader_prog& getShaderHandle(Shader shader) { return shaderHandles.find(shader)->second; }	// maybe const somehow?
+	shader_prog& getShaderHandle(Shader shader) { return shaderHandles.find(shader)->second; }
 
 private:
 	ResourceManager();

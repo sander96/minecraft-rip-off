@@ -15,6 +15,8 @@ public:
 	void rotate(glm::vec2 rotation);
 	glm::mat4 getPerspective();
 	glm::mat4 getView();
+	glm::vec3 getPosition();
+
 private:
 	glm::vec3 lookAt;
 	glm::vec3 position;
@@ -22,4 +24,4 @@ private:
 	glm::mat4 view;
 };
 
-#endif // !CAMERA_H
+#endif

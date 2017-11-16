@@ -8,7 +8,7 @@ Camera::Camera()
 	float aspectRatio = 1.6f;
 	perspective = glm::perspective(glm::radians(settings.getFov()), aspectRatio, 0.1f, 100.0f);
 
-	position = glm::vec3(0.0, 0.0, 10.0);
+	position = glm::vec3(0.0, 0.0, 0.0);
 	lookAt = glm::vec3(0.0, 0.0, -1.0);
 	view = glm::lookAt(
 		position,
@@ -28,6 +28,8 @@ void Camera::move(glm::vec3 movement)
 	//moving left
 	glm::vec3 leftVector = glm::cross(glm::vec3(0.0, 1.0, 0.0), forwardVector);
 	position += movement[0] * leftVector;
+
+	//std::cout << std::fixed << position[0] << " " << position[1] << " " << position[2] << std::endl;
 
 	view = glm::lookAt(
 		position,
@@ -56,4 +58,9 @@ glm::mat4 Camera::getPerspective()
 glm::mat4 Camera::getView()
 {
 	return view;
+}
+
+glm::vec3 Camera::getPosition()
+{
+	return position;
 }

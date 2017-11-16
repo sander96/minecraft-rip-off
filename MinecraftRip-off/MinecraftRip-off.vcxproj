@@ -153,23 +153,34 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\block\Cube.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\chunk\Chunk.cpp" />
+    <ClCompile Include="src\chunk\ChunkManager.cpp" />
+    <ClCompile Include="src\entities\Player.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\PlayState.cpp" />
     <ClCompile Include="src\utilities\Settings.cpp" />
     <ClCompile Include="src\utilities\Shader_util.cpp" />
     <ClCompile Include="src\utilities\ResourceManager.cpp" />
     <ClCompile Include="src\utilities\Texture_util.cpp" />
+    <ClCompile Include="src\World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\block\Block.h" />
+    <ClInclude Include="src\block\Cube.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Application.h" />
+    <ClInclude Include="src\chunk\Chunk.h" />
+    <ClInclude Include="src\chunk\ChunkManager.h" />
+    <ClInclude Include="src\entities\Player.h" />
     <ClInclude Include="src\PlayState.h" />
     <ClInclude Include="src\utilities\Settings.h" />
     <ClInclude Include="src\utilities\Shader_util.h" />
     <ClInclude Include="src\utilities\ResourceManager.h" />
     <ClInclude Include="src\utilities\Texture_util.h" />
+    <ClInclude Include="src\World.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\settings.cfg" />

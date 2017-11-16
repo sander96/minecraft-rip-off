@@ -3,11 +3,12 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <glm\glm.hpp>
+#include <glm/glm.hpp>
 #include "utilities/Shader_util.h"
-#include "Camera.h"
+//#include "Camera.h"
 #include "utilities/Settings.h"
 #include "utilities/ResourceManager.h"
+#include "World.h"
 
 class PlayState
 {
@@ -19,11 +20,9 @@ public:
 	void render(GLFWwindow* window);
 
 private:
-	Camera camera;
-	double mousePosX;
-	double mousePosY;
 	Settings settings;
 	ResourceManager* resourceManager;
+	World world;
 };
 
 #endif
