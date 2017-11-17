@@ -19,17 +19,18 @@ Camera::Camera()
 
 void Camera::move(glm::vec3 movement)
 {
-	glm::vec3 forwardVector = lookAt;
+	glm::vec3 forwardVector = normalize(glm::vec3(lookAt.x, 0.0, lookAt.z));
 	glm::normalize(forwardVector);
 
 	//moving forward
 	position += movement[2] * forwardVector;
 
 	//moving left
-	glm::vec3 leftVector = glm::cross(glm::vec3(0.0, 1.0, 0.0), forwardVector);
+	leftVector = glm::cross(glm::vec3(0.0, 1.0, 0.0), forwardVector);
 	position += movement[0] * leftVector;
 
-	//std::cout << std::fixed << position[0] << " " << position[1] << " " << position[2] << std::endl;
+	//moving up
+	position += movement[1] * glm::vec3(0.0, 1.0, 0.0);
 
 	view = glm::lookAt(
 		position,
@@ -40,9 +41,12 @@ void Camera::move(glm::vec3 movement)
 
 void Camera::rotate(glm::vec2 rotation)
 {
-	//OTI ARVAMUS, kaameral on see viga, et on world axisi järgi rotate, kuidagi localiks?
+	glm::vec3 forwardVector = normalize(glm::vec3(lookAt.x, 0.0, lookAt.z));
+	leftVector = glm::cross(glm::vec3(0.0, 1.0, 0.0), forwardVector);
+
 	lookAt = glm::rotate(glm::mat4(1.0f), glm::radians(rotation[0]), glm::vec3(0.0, 1.0, 0.0)) * glm::vec4(lookAt, 0.0);
-	lookAt = glm::rotate(glm::mat4(1.0f), glm::radians(rotation[1]), glm::vec3(1.0, 0.0, 0.0)) * glm::vec4(lookAt, 0.0);
+	lookAt = glm::rotate(glm::mat4(1.0f), glm::radians(rotation[1]), normalize(leftVector)) * glm::vec4(lookAt, 0.0);
+	
 	view = glm::lookAt(
 		position,
 		lookAt + position,

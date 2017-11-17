@@ -19,6 +19,7 @@ public:
 
 private:
 	glm::vec3 lookAt;
+	glm::vec3 leftVector;
 	glm::vec3 position;
 	glm::mat4 perspective;
 	glm::mat4 view;
