@@ -9,7 +9,7 @@ World::World(GLFWwindow* win)
 void World::update()
 {
 	player.processInput(window);
-	chunkManager.updateMesh();
+	chunkManager.updateChunks(player.getPosition());
 }
 
 void World::render()

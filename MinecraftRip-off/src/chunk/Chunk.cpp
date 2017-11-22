@@ -2,7 +2,10 @@
 #include "../Block/Cube.h"
 #include <iostream>
 
-Chunk::Chunk()
+Chunk::Chunk(int x, int z)
+	:
+	xPosition{ x },
+	zPosition{ z }
 {
 	blocks.fill(Block::Air);
 }
@@ -38,7 +41,7 @@ void Chunk::render(shader_prog& shader)
 	for (auto pair : temporaryBlocks)
 	{
 		auto coords = getCoords(pair.second);
-		renderCube(pair.first, shader, std::get<0>(coords), std::get<1>(coords), std::get<2>(coords), blocks[pair.second]);
+		renderCube(pair.first, shader, xPosition + std::get<0>(coords), std::get<1>(coords), zPosition + std::get<2>(coords), blocks[pair.second]);
 	}
 }
 

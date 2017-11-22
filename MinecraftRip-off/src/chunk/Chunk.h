@@ -11,11 +11,9 @@
 class Chunk
 {
 public:
-	Chunk();
+	Chunk(int x, int z);
 
 	void setBlock(Block block, unsigned int x, unsigned int y, unsigned int z);
-
-	//Block getBlock(unsigned int x, unsigned int y, unsigned int z) {return }
 
 	void updateMesh();
 
@@ -25,7 +23,7 @@ private:
 	std::tuple<int, int, int> getCoords(int index);
 
 	int xPosition;
-	int yPosition;
+	int zPosition;
 
 	bool requiresUpdate = true;
 

@@ -2,14 +2,53 @@
 #include "../Block/Cube.h"
 
 ChunkManager::ChunkManager()
+	:
+	previousPlayerPosition{ glm::vec3(123.0, 0.0, 0.0) }	// to force chunk update
 {
-	std::unique_ptr<Chunk> chunk = std::make_unique<Chunk>(Chunk{});
+	updateChunks(glm::vec3(0.0, 0.0, 0.0));
+}
+
+void ChunkManager::updateChunks(glm::vec3 playerPosition)
+{
+	ChunkCoordinate playerChunkCoord{ playerPosition };
+
+	if (playerChunkCoord != previousPlayerPosition)		// true if player entered to a new chunk
+	{
+		std::cout << "Player entered to a new chunk" << std::endl;	// debugging info
+
+		std::multimap<ChunkCoordinate, std::unique_ptr<Chunk>> newChunks;
+
+		const int radius = 2;	// currently low because of performance issues
+
+		for (int i = -radius; i <= radius; ++i)
+		{
+			for (int j = -radius; j <= radius; ++j)
+			{
+				ChunkCoordinate position = glm::vec3(i * 16 + playerPosition[0], 0.0, j * 16 + playerPosition[2]);
+				position.setDistance(playerChunkCoord.distance(position));
+
+				if (playerChunkCoord.distance(position) <= radius)
+				{
+					newChunks.insert({ position, createChunk(position) });
+				}
+			}
+		}
+
+		chunks = std::move(newChunks);
+		previousPlayerPosition = playerChunkCoord;
+		updateMesh();
+	}
+}
+
+std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
+{
+	std::unique_ptr<Chunk> chunk = std::make_unique<Chunk>(Chunk{ coordinate.getX() * 16, coordinate.getZ() * 16 });
 
 	for (int x = 0; x < 16; ++x)		// temp
 	{
 		for (int z = 0; z < 16; ++z)
 		{
-			for (int y = 0; y < 20; ++y)
+			for (int y = 0; y < 3; ++y)		// currently low because of performance issues
 			{
 				if (y == 19)
 				{
@@ -27,7 +66,7 @@ ChunkManager::ChunkManager()
 		}
 	}
 
-	chunks[std::pair<int, int>(0, 0)] = std::move(chunk);		// currently creates only one chunk
+	return chunk;
 }
 
 void ChunkManager::updateMesh()

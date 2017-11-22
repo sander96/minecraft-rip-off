@@ -7,17 +7,22 @@
 #include "Chunk.h"
 #include <memory>
 #include "../utilities/ResourceManager.h"
+#include "ChunkCoordinate.h"
 
 class ChunkManager
 {
 public:
 	ChunkManager();
 
+	void updateChunks(glm::vec3 playerPosition);
+	std::unique_ptr<Chunk> createChunk(ChunkCoordinate coordinate);
+
 	void updateMesh();
 	void renderChunks();
 
 private:
-	std::map<std::pair<int, int>, std::unique_ptr<Chunk>> chunks;
+	std::multimap<ChunkCoordinate, std::unique_ptr<Chunk>> chunks;	// maybe some other data structure
+	ChunkCoordinate previousPlayerPosition;
 };
 
 #endif

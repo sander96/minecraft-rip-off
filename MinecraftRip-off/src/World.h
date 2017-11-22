@@ -7,7 +7,7 @@
 class World
 {
 public:
-	World(GLFWwindow* win);
+	explicit World(GLFWwindow* win);
 
 	void update();
 
