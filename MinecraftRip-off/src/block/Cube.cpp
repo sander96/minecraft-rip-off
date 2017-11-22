@@ -1,10 +1,13 @@
 #include "Cube.h"
 #include "../utilities/ResourceManager.h"
 
-GLuint createCube(shader_prog* shader) {
-	GLuint vertexArrayHandle;
-	GLuint arrayBufferHandle;
-
+Cube::Cube(int x, int y, int z, Block block)
+	:
+	x{ x },
+	y{ y },
+	z{ z },
+	block{ block }
+{
 	glGenVertexArrays(1, &vertexArrayHandle);
 	glBindVertexArray(vertexArrayHandle);
 	glGenBuffers(1, &arrayBufferHandle);
@@ -63,42 +66,43 @@ GLuint createCube(shader_prog* shader) {
 	glBindBuffer(GL_ARRAY_BUFFER, arrayBufferHandle);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
 
-	GLuint loc = glGetAttribLocation(shader->getProg(), "position");
-	if (loc < 0) throw (std::runtime_error(std::string("Location not found in shader program for variable ") + "position"));
+	shader_prog& shader = ResourceManager::getInstance().getShaderHandle(Shader::Texture);
+
+	GLuint loc = glGetAttribLocation(shader.getProg(), "position");
 	glEnableVertexAttribArray(loc);
 	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (const GLvoid*)(0 * sizeof(float)));
 
-	loc = glGetAttribLocation(shader->getProg(), "uv");
-	if (loc < 0) throw (std::runtime_error(std::string("Location not found in shader program for variable ") + "color"));
+	loc = glGetAttribLocation(shader.getProg(), "uv");
 	glEnableVertexAttribArray(loc);
 	glVertexAttribPointer(loc, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (const GLvoid*)(3 * sizeof(float)));
 
-	loc = glGetAttribLocation(shader->getProg(), "normal");
-	if (loc < 0) throw (std::runtime_error(std::string("Location not found in shader program for variable ") + "normal"));
+	loc = glGetAttribLocation(shader.getProg(), "normal");
 	glEnableVertexAttribArray(loc);
 	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (const GLvoid*)(5 * sizeof(float)));
 
 	glBindVertexArray(0);
-	return vertexArrayHandle;
 }
 
-GLuint makeBlock(Block block) {
-	shader_prog* shader = &ResourceManager::getInstance().getShaderHandle(Shader::Texture);
-	return createCube(shader);
+Cube::~Cube()
+{
+	glDeleteVertexArrays(1, &vertexArrayHandle);
+	glDeleteBuffers(1, &arrayBufferHandle);
 }
 
-void renderCube(const GLuint handle, shader_prog& shader, int x, int y, int z, Block block)
+void Cube::render()
 {
 	glm::mat4 matrix{ 1.0 };
 	glm::vec3 test = glm::vec3(2 * x, 2 * y, 2 * z);
 	matrix = glm::scale(matrix, glm::vec3(0.5));
 	matrix = glm::translate(matrix, test);
 
+	shader_prog& shader = ResourceManager::getInstance().getShaderHandle(Shader::Texture);
+
 	shader.uniformMatrix4fv("modelMatrix", matrix);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, ResourceManager::getInstance().getTextureHandle(block));
 
-	glBindVertexArray(handle);
+	glBindVertexArray(vertexArrayHandle);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 }

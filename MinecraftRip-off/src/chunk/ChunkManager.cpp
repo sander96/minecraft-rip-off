@@ -25,10 +25,10 @@ void ChunkManager::updateChunks(glm::vec3 playerPosition)
 			for (int j = -radius; j <= radius; ++j)
 			{
 				ChunkCoordinate position = glm::vec3(i * 16 + playerPosition[0], 0.0, j * 16 + playerPosition[2]);
-				position.setDistance(playerChunkCoord.distance(position));
 
 				if (playerChunkCoord.distance(position) <= radius)
 				{
+					position.setDistance(playerChunkCoord.distance(position));
 					newChunks.insert({ position, createChunk(position) });
 				}
 			}
@@ -42,7 +42,7 @@ void ChunkManager::updateChunks(glm::vec3 playerPosition)
 
 std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 {
-	std::unique_ptr<Chunk> chunk = std::make_unique<Chunk>(Chunk{ coordinate.getX() * 16, coordinate.getZ() * 16 });
+	std::unique_ptr<Chunk> chunk = std::make_unique<Chunk>(coordinate.getX() * 16, coordinate.getZ() * 16);
 
 	for (int x = 0; x < 16; ++x)		// temp
 	{
@@ -50,11 +50,11 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 		{
 			for (int y = 0; y < 3; ++y)		// currently low because of performance issues
 			{
-				if (y == 19)
+				if (y == 2)
 				{
 					chunk->setBlock(Block::Grass, x, y, z);
 				}
-				else if (y > 15)
+				else if (y == 1)
 				{
 					chunk->setBlock(Block::Dirt, x, y, z);
 				}

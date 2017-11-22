@@ -29,7 +29,8 @@ void Chunk::updateMesh()	// temporary mesh logic, currently unefficient
 	{
 		if (blocks[i] != Block::Air)
 		{
-			temporaryBlocks.push_back(std::pair<GLuint, int>(makeBlock(blocks[i]), i));
+			auto coords = getCoords(i);
+			temporaryBlocks.emplace_back(xPosition + std::get<0>(coords), std::get<1>(coords), zPosition + std::get<2>(coords), blocks[i]);
 		}
 	}
 
@@ -38,10 +39,9 @@ void Chunk::updateMesh()	// temporary mesh logic, currently unefficient
 
 void Chunk::render(shader_prog& shader)
 {
-	for (auto pair : temporaryBlocks)
+	for (auto& cube : temporaryBlocks)
 	{
-		auto coords = getCoords(pair.second);
-		renderCube(pair.first, shader, xPosition + std::get<0>(coords), std::get<1>(coords), zPosition + std::get<2>(coords), blocks[pair.second]);
+		cube.render();
 	}
 }
 

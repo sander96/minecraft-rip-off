@@ -6,7 +6,23 @@
 #include "../utilities/Shader_util.h"
 #include "Block.h"
 
-GLuint makeBlock(Block block);
-void renderCube(const GLuint handle, shader_prog& shader, int x, int y, int z, Block block);
+class Cube
+{
+public:
+	Cube(int x, int y, int z, Block block);
+	~Cube();
+
+	void render();
+
+private:
+	GLuint vertexArrayHandle;
+	GLuint arrayBufferHandle;
+
+	Block block;
+
+	int x;
+	int y;
+	int z;
+};
 
 #endif
