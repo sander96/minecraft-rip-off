@@ -28,7 +28,7 @@ Settings::Settings()
 		}
 		else if (identifier == "sensitivity")
 		{
-			sensitivity = std::stoi(value);
+			sensitivity = std::stof(value);
 		}
 	}
 }

@@ -7,6 +7,7 @@
 #include "Chunk.h"
 #include <memory>
 #include "../utilities/ResourceManager.h"
+#include "../utilities/PerlinNoise.h"
 #include "ChunkCoordinate.h"
 
 class ChunkManager
@@ -23,6 +24,7 @@ public:
 private:
 	std::multimap<ChunkCoordinate, std::unique_ptr<Chunk>> chunks;	// maybe some other data structure
 	ChunkCoordinate previousPlayerPosition;
+	PerlinNoise perlinNoise;
 };
 
 #endif
