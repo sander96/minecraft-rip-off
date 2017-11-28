@@ -5,7 +5,8 @@
 Chunk::Chunk(int x, int z)
 	:
 	xPosition{ x },
-	zPosition{ z }
+	zPosition{ z },
+	chunkMesh{ x, z }
 {
 	blocks.fill(Block::Air);
 }
@@ -16,33 +17,21 @@ void Chunk::setBlock(Block block, unsigned int x, unsigned int y, unsigned int z
 	requiresUpdate = true;
 }
 
-void Chunk::updateMesh()	// temporary mesh logic, currently unefficient
+void Chunk::updateMesh()
 {
 	if (!requiresUpdate)
 	{
 		return;
 	}
 
-	temporaryBlocks.clear();
-
-	for (int i = 0; i < blocks.size(); ++i)
-	{
-		if (blocks[i] != Block::Air)
-		{
-			auto coords = getCoords(i);
-			temporaryBlocks.emplace_back(xPosition + std::get<0>(coords), std::get<1>(coords), zPosition + std::get<2>(coords), blocks[i]);
-		}
-	}
+	chunkMesh.updateChunkMesh(blocks);
 
 	requiresUpdate = false;
 }
 
 void Chunk::render(shader_prog& shader)
 {
-	for (auto& cube : temporaryBlocks)
-	{
-		cube.render();
-	}
+	chunkMesh.render();
 }
 
 std::tuple<int, int, int> Chunk::getCoords(int index)

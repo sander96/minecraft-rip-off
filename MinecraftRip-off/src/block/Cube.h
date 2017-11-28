@@ -12,6 +12,12 @@ public:
 	Cube(int x, int y, int z, Block block);
 	~Cube();
 
+	Cube(const Cube& cube) = delete;
+	Cube& operator=(const Cube& cube) = delete;
+
+	Cube(Cube&& cube);
+	Cube& operator=(Cube&& cube);
+
 	void render();
 
 private:

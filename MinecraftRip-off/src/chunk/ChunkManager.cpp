@@ -5,7 +5,7 @@
 ChunkManager::ChunkManager()
 	:
 	previousPlayerPosition{ glm::vec3(123.0, 0.0, 0.0) },	// to force chunk update
-	perlinNoise {}
+	perlinNoise{}
 {
 	updateChunks(glm::vec3(0.0, 0.0, 0.0));
 }
@@ -20,7 +20,7 @@ void ChunkManager::updateChunks(glm::vec3 playerPosition)
 
 		std::multimap<ChunkCoordinate, std::unique_ptr<Chunk>> newChunks;
 
-		const int radius = 6;	// currently low because of performance issues
+		const int radius = 2;
 
 		for (int i = -radius; i <= radius; ++i)
 		{
@@ -46,7 +46,7 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 {
 	std::unique_ptr<Chunk> chunk = std::make_unique<Chunk>(coordinate.getX() * 16, coordinate.getZ() * 16);
 
-	for (int x = 0; x < 16; ++x)		// temp
+	for (int x = 0; x < 16; ++x)
 	{
 		for (int z = 0; z < 16; ++z)
 		{
@@ -60,7 +60,7 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 			double j2 = (coordinate.getZ() * 16.0 + z) / 64.0;
 			double y2 = 40 * perlinNoise.noise(i2, j2, 0.8);
 
-			chunk->setBlock(Block::Grass, x, y1+y2, z);
+			chunk->setBlock(Block::Grass, x, y1 + y2, z);
 		}
 	}
 

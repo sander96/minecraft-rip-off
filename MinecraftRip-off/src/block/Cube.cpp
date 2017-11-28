@@ -89,6 +89,37 @@ Cube::~Cube()
 	glDeleteBuffers(1, &arrayBufferHandle);
 }
 
+Cube::Cube(Cube&& cube)
+{
+	block = std::move(cube.block);
+	x = cube.x;
+	y = cube.y;
+	z = cube.z;
+
+	vertexArrayHandle = cube.vertexArrayHandle;
+	cube.vertexArrayHandle = 0;
+
+	arrayBufferHandle = cube.arrayBufferHandle;
+	cube.arrayBufferHandle = 0;
+}
+
+
+Cube& Cube::operator=(Cube&& cube)
+{
+	block = std::move(cube.block);
+	x = cube.x;
+	y = cube.y;
+	z = cube.z;
+
+	vertexArrayHandle = cube.vertexArrayHandle;
+	cube.vertexArrayHandle = 0;
+
+	arrayBufferHandle = cube.arrayBufferHandle;
+	cube.arrayBufferHandle = 0;
+
+	return *this;
+}
+
 void Cube::render()
 {
 	glm::mat4 matrix{ 1.0 };

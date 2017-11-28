@@ -8,6 +8,7 @@
 #include "../Block/Block.h"
 #include "../utilities/Shader_util.h"
 #include "../block/Cube.h"
+#include "ChunkMesh.h"
 
 class Chunk
 {
@@ -29,7 +30,7 @@ private:
 	bool requiresUpdate = true;
 
 	std::array<Block, 16 * 16 * 256> blocks;
-	std::vector<Cube> temporaryBlocks;	// temp, very unefficient
+	ChunkMesh chunkMesh;
 };
 
 #endif
