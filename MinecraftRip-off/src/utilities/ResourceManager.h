@@ -12,6 +12,11 @@ enum class Shader
 	Default, Texture
 };
 
+enum class Texture
+{
+	Atlas, Sun, Moon
+};
+
 
 class ResourceManager
 {
@@ -23,7 +28,7 @@ public:
 
 	static ResourceManager& getInstance();
 
-	const GLuint getTextureHandle(Block block) { return textureHandles[block]; }
+	const GLuint getTextureHandle(Texture texture) { return textureHandles[texture]; }
 	shader_prog& getShaderHandle(Shader shader) { return shaderHandles.find(shader)->second; }
 
 private:
@@ -32,7 +37,7 @@ private:
 	void loadTextures();
 	void loadShaders();
 
-	std::map<Block, GLuint> textureHandles;
+	std::map<Texture, GLuint> textureHandles;
 	std::map<Shader, shader_prog> shaderHandles;
 };
 

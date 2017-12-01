@@ -196,12 +196,9 @@
     <None Include="resources\shaders\texture.vert.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="resources\textures\blocks\stone.png" />
-    <Image Include="resources\textures\blocks\leaves.png" />
-    <Image Include="resources\textures\blocks\sand.png" />
-    <Image Include="resources\textures\blocks\dirt.png" />
-    <Image Include="resources\textures\blocks\grass.png" />
-    <Image Include="resources\textures\blocks\wood.png" />
+    <Image Include="resources\textures\blocks\texture_atlas.png" />
+    <Image Include="resources\textures\other\moon_phases.png" />
+    <Image Include="resources\textures\other\sun.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

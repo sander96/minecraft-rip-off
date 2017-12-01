@@ -113,6 +113,68 @@ namespace
 
 		return true;
 	}
+
+	enum class Face
+	{
+		Top, Side, Bottom
+	};
+
+	std::pair<glm::vec2, glm::vec2> calculateUV(Block block, Face face)
+	{
+		std::pair<glm::vec2, glm::vec2> uv;
+
+		if (block == Block::Grass)
+		{
+			uv.first = glm::vec2(0.0, 256.0);
+			uv.second = glm::vec2(16.0, 240.0);
+		}
+		else if (block == Block::Dirt)
+		{
+			uv.first = glm::vec2(16.0, 256.0);
+			uv.second = glm::vec2(32.0, 240.0);
+		}
+		else if (block == Block::Sand)
+		{
+			uv.first = glm::vec2(32.0, 256.0);
+			uv.second = glm::vec2(48.0, 240.0);
+		}
+		else if (block == Block::Stone)
+		{
+			uv.first = glm::vec2(48.0, 256.0);
+			uv.second = glm::vec2(64.0, 240.0);
+		}
+		else if (block == Block::Wood)
+		{
+			uv.first = glm::vec2(64.0, 256.0);
+			uv.second = glm::vec2(80.0, 240.0);
+		}
+		else if (block == Block::Leaves)
+		{
+			uv.first = glm::vec2(80.0, 256.0);
+			uv.second = glm::vec2(96.0, 240.0);
+		}
+
+		if (face == Face::Side)
+		{
+			uv.first[1] -= 16;
+			uv.second[1] -= 16;
+		}
+		else if (face == Face::Bottom)
+		{
+			uv.first[1] -= 32;
+			uv.second[1] -= 32;
+		}
+
+		float size = 256.0;
+
+		uv.first[0] /= size;
+		uv.first[1] /= size;
+
+		uv.second[0] /= size;
+		uv.second[1] /= size;
+
+		return uv;
+	}
 }
 
 ChunkMesh::ChunkMesh(int x, int z)
@@ -198,10 +260,12 @@ void ChunkMesh::updateChunkMesh(std::array<Block, 16 * 16 * 256>& blocks)
 
 		if (!rightFaceCovered(blocks, i)) // X Y Z U V NORMAL
 		{
-			GLuint bottomLeft = addVertex(vertexData, { x + 1.0f, y + -1.0f, z + 1.0f, 1.0f, 1.0f / 3, 1.0f, 0.0f, 0.0f });		// bottom left
-			GLuint bottomRight = addVertex(vertexData, { x + 1.0f, y + -1.0f, z + -1.0f, 0.0f, 1.0f / 3, 1.0f, 0.0f, 0.0f });	// bottom right
-			GLuint topRight = addVertex(vertexData, { x + 1.0f, y + 1.0f, z + -1.0f, 0.0f, 2.0f / 3, 1.0f, 0.0f, 0.0f });		// top right
-			GLuint topLeft = addVertex(vertexData, { x + 1.0f, y + 1.0f, z + 1.0f, 1.0f, 2.0f / 3, 1.0f, 0.0f, 0.0f });			// top left
+			auto uv = calculateUV(blocks[i], Face::Side);
+
+			GLuint bottomLeft = addVertex(vertexData, { x + 1.0f, y + -1.0f, z + 1.0f, uv.first[0], uv.second[1], 1.0f, 0.0f, 0.0f });		// bottom left
+			GLuint bottomRight = addVertex(vertexData, { x + 1.0f, y + -1.0f, z + -1.0f, uv.second[0], uv.second[1], 1.0f, 0.0f, 0.0f });	// bottom right
+			GLuint topRight = addVertex(vertexData, { x + 1.0f, y + 1.0f, z + -1.0f, uv.second[0], uv.first[1], 1.0f, 0.0f, 0.0f });		// top right
+			GLuint topLeft = addVertex(vertexData, { x + 1.0f, y + 1.0f, z + 1.0f, uv.first[0], uv.first[1], 1.0f, 0.0f, 0.0f });			// top left
 
 			indices.insert(indices.end(), { bottomLeft, bottomRight, topRight });
 			indices.insert(indices.end(), { bottomLeft, topRight, topLeft });
@@ -209,10 +273,12 @@ void ChunkMesh::updateChunkMesh(std::array<Block, 16 * 16 * 256>& blocks)
 
 		if (!leftFaceCovered(blocks, i))
 		{
-			GLuint bottomLeft = addVertex(vertexData, { x + -1.0f, y + -1.0f, z + -1.0f, 0.0f, 1.0f / 3, -1.0f, 0.0f, 0.0f });	// bottom left
-			GLuint bottomRight = addVertex(vertexData, { x + -1.0f, y + -1.0f, z + 1.0f, 1.0f, 1.0f / 3, -1.0f, 0.0f, 0.0f });	// bottom right
-			GLuint topRight = addVertex(vertexData, { x + -1.0f, y + 1.0f, z + 1.0f, 1.0f, 2.0f / 3, -1.0f, 0.0f, 0.0f });		// top right
-			GLuint topLeft = addVertex(vertexData, { x + -1.0f, y + 1.0f, z + -1.0f, 0.0f, 2.0f / 3, -1.0f, 0.0f, 0.0f });		// top left
+			auto uv = calculateUV(blocks[i], Face::Side);
+
+			GLuint bottomLeft = addVertex(vertexData, { x + -1.0f, y + -1.0f, z + -1.0f, uv.first[0], uv.second[1], -1.0f, 0.0f, 0.0f });	// bottom left
+			GLuint bottomRight = addVertex(vertexData, { x + -1.0f, y + -1.0f, z + 1.0f, uv.second[0], uv.second[1], -1.0f, 0.0f, 0.0f });	// bottom right
+			GLuint topRight = addVertex(vertexData, { x + -1.0f, y + 1.0f, z + 1.0f, uv.second[0], uv.first[1], -1.0f, 0.0f, 0.0f });		// top right
+			GLuint topLeft = addVertex(vertexData, { x + -1.0f, y + 1.0f, z + -1.0f, uv.first[0], uv.first[1], -1.0f, 0.0f, 0.0f });		// top left
 
 			indices.insert(indices.end(), { bottomLeft, bottomRight, topRight });
 			indices.insert(indices.end(), { bottomLeft, topRight, topLeft });
@@ -220,10 +286,12 @@ void ChunkMesh::updateChunkMesh(std::array<Block, 16 * 16 * 256>& blocks)
 
 		if (!frontFaceCovered(blocks, i))
 		{
-			GLuint bottomLeft = addVertex(vertexData, { x + -1.0f, y + -1.0f, z + 1.0f, 0.0f, 1.0f / 3, 0.0f, 0.0f, 1.0f });	// bottom left
-			GLuint bottomRight = addVertex(vertexData, { x + 1.0f, y + -1.0f, z + 1.0f, 1.0f, 1.0f / 3, 0.0f, 0.0f, 1.0f });	// bottom right
-			GLuint topRight = addVertex(vertexData, { x + 1.0f, y + 1.0f, z + 1.0f, 1.0f, 2.0f / 3, 0.0f, 0.0f, 1.0f });		// top right
-			GLuint topLeft = addVertex(vertexData, { x + -1.0f, y + 1.0f, z + 1.0f, 0.0f, 2.0f / 3, 0.0f, 0.0f, 1.0f });		// top left
+			auto uv = calculateUV(blocks[i], Face::Side);
+
+			GLuint bottomLeft = addVertex(vertexData, { x + -1.0f, y + -1.0f, z + 1.0f, uv.first[0], uv.second[1], 0.0f, 0.0f, 1.0f });		// bottom left
+			GLuint bottomRight = addVertex(vertexData, { x + 1.0f, y + -1.0f, z + 1.0f, uv.second[0], uv.second[1], 0.0f, 0.0f, 1.0f });	// bottom right
+			GLuint topRight = addVertex(vertexData, { x + 1.0f, y + 1.0f, z + 1.0f, uv.second[0], uv.first[1], 0.0f, 0.0f, 1.0f });			// top right
+			GLuint topLeft = addVertex(vertexData, { x + -1.0f, y + 1.0f, z + 1.0f, uv.first[0], uv.first[1], 0.0f, 0.0f, 1.0f });			// top left
 
 			indices.insert(indices.end(), { bottomLeft, bottomRight, topRight });
 			indices.insert(indices.end(), { bottomLeft, topRight, topLeft });
@@ -231,10 +299,12 @@ void ChunkMesh::updateChunkMesh(std::array<Block, 16 * 16 * 256>& blocks)
 
 		if (!backFaceCovered(blocks, i))
 		{
-			GLuint bottomLeft = addVertex(vertexData, { x + 1.0f, y + -1.0f, z + -1.0f, 0.0f, 1.0f / 3, 0.0f, 0.0f, -1.0f });	// bottom left
-			GLuint bottomRight = addVertex(vertexData, { x + -1.0f, y + -1.0f, z + -1.0f, 1.0f, 1.0f / 3, 0.0f, 0.0f, -1.0f });	// bottom right
-			GLuint topRight = addVertex(vertexData, { x + -1.0f, y + 1.0f, z + -1.0f, 1.0f, 2.0f / 3, 0.0f, 0.0f, -1.0f });		// top right
-			GLuint topLeft = addVertex(vertexData, { x + 1.0f, y + 1.0f, z + -1.0f, 0.0f, 2.0f / 3, 0.0f, 0.0f, -1.0f });		// top left
+			auto uv = calculateUV(blocks[i], Face::Side);
+
+			GLuint bottomLeft = addVertex(vertexData, { x + 1.0f, y + -1.0f, z + -1.0f, uv.first[0], uv.second[1], 0.0f, 0.0f, -1.0f });	// bottom left
+			GLuint bottomRight = addVertex(vertexData, { x + -1.0f, y + -1.0f, z + -1.0f, uv.second[0], uv.second[1], 0.0f, 0.0f, -1.0f });	// bottom right
+			GLuint topRight = addVertex(vertexData, { x + -1.0f, y + 1.0f, z + -1.0f, uv.second[0], uv.first[1], 0.0f, 0.0f, -1.0f });		// top right
+			GLuint topLeft = addVertex(vertexData, { x + 1.0f, y + 1.0f, z + -1.0f, uv.first[0], uv.first[1], 0.0f, 0.0f, -1.0f });			// top left
 
 			indices.insert(indices.end(), { bottomLeft, bottomRight, topRight });
 			indices.insert(indices.end(), { bottomLeft, topRight, topLeft });
@@ -242,10 +312,12 @@ void ChunkMesh::updateChunkMesh(std::array<Block, 16 * 16 * 256>& blocks)
 
 		if (!topFaceCovered(blocks, i))
 		{
-			GLuint bottomLeft = addVertex(vertexData, { x + -1.0f, y + 1.0f, z + 1.0f, 0.0f, 2.0f / 3, 0.0f, 1.0f, 0.0f });		// bottom left
-			GLuint bottomRight = addVertex(vertexData, { x + 1.0f, y + 1.0f, z + 1.0f, 1.0f, 2.0f / 3, 0.0f, 1.0f, 0.0f });		// bottom right
-			GLuint topRight = addVertex(vertexData, { x + 1.0f, y + 1.0f, z + -1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f });			// top right
-			GLuint topLeft = addVertex(vertexData, { x + -1.0f, y + 1.0f, z + -1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f });			// top left
+			auto uv = calculateUV(blocks[i], Face::Top);
+
+			GLuint bottomLeft = addVertex(vertexData, { x + -1.0f, y + 1.0f, z + 1.0f, uv.first[0], uv.second[1], 0.0f, 1.0f, 0.0f });		// bottom left
+			GLuint bottomRight = addVertex(vertexData, { x + 1.0f, y + 1.0f, z + 1.0f, uv.second[0], uv.second[1], 0.0f, 1.0f, 0.0f });		// bottom right
+			GLuint topRight = addVertex(vertexData, { x + 1.0f, y + 1.0f, z + -1.0f, uv.second[0], uv.first[1], 0.0f, 1.0f, 0.0f });		// top right
+			GLuint topLeft = addVertex(vertexData, { x + -1.0f, y + 1.0f, z + -1.0f, uv.first[0], uv.first[1], 0.0f, 1.0f, 0.0f });			// top left
 
 			indices.insert(indices.end(), { bottomLeft, bottomRight, topRight });
 			indices.insert(indices.end(), { bottomLeft, topRight, topLeft });
@@ -253,10 +325,12 @@ void ChunkMesh::updateChunkMesh(std::array<Block, 16 * 16 * 256>& blocks)
 
 		if (!bottomFaceCovered(blocks, i))
 		{
-			GLuint bottomLeft = addVertex(vertexData, { x + -1.0f, y + -1.0f, z + -1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f });		// bottom left
-			GLuint bottomRight = addVertex(vertexData, { x + 1.0f, y + -1.0f, z + -1.0f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f });		// bottom right
-			GLuint topRight = addVertex(vertexData, { x + 1.0f, y + -1.0f, z + 1.0f, 1.0f, 1.0f / 3, 0.0f, -1.0f, 0.0f });		// top right
-			GLuint topLeft = addVertex(vertexData, { x + -1.0f, y + -1.0f, z + 1.0f, 0.0f, 1.0f / 3, 0.0f, -1.0f, 0.0f });		// top left
+			auto uv = calculateUV(blocks[i], Face::Bottom);
+
+			GLuint bottomLeft = addVertex(vertexData, { x + -1.0f, y + -1.0f, z + -1.0f, uv.first[0], uv.second[1], 0.0f, -1.0f, 0.0f });		// bottom left
+			GLuint bottomRight = addVertex(vertexData, { x + 1.0f, y + -1.0f, z + -1.0f, uv.second[0], uv.second[1], 0.0f, -1.0f, 0.0f });		// bottom right
+			GLuint topRight = addVertex(vertexData, { x + 1.0f, y + -1.0f, z + 1.0f, uv.second[0], uv.first[1], 0.0f, -1.0f, 0.0f });		// top right
+			GLuint topLeft = addVertex(vertexData, { x + -1.0f, y + -1.0f, z + 1.0f, uv.first[0], uv.first[1], 0.0f, -1.0f, 0.0f });		// top left
 
 			indices.insert(indices.end(), { bottomLeft, bottomRight, topRight });
 			indices.insert(indices.end(), { bottomLeft, topRight, topLeft });
@@ -307,7 +381,7 @@ void ChunkMesh::render()
 	shader.uniformMatrix4fv("modelMatrix", matrix);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, ResourceManager::getInstance().getTextureHandle(Block::Grass));	// TODO should create a texture atlas for blocks
+	glBindTexture(GL_TEXTURE_2D, ResourceManager::getInstance().getTextureHandle(Texture::Atlas));
 
 	glBindVertexArray(vertexArrayHandle);
 	glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, nullptr);

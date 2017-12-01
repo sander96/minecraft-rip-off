@@ -64,6 +64,8 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 		}
 	}
 
+	chunk->setBlock(Block::Leaves, 6, 6, 6);		// remove this
+
 	return chunk;
 }
 

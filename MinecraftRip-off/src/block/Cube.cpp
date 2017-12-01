@@ -132,7 +132,7 @@ void Cube::render()
 	shader.uniformMatrix4fv("modelMatrix", matrix);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, ResourceManager::getInstance().getTextureHandle(block));
+	glBindTexture(GL_TEXTURE_2D, ResourceManager::getInstance().getTextureHandle(Texture::Atlas));
 
 	glBindVertexArray(vertexArrayHandle);
 	glDrawArrays(GL_TRIANGLES, 0, 36);

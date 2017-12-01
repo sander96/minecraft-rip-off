@@ -18,12 +18,9 @@ ResourceManager& ResourceManager::getInstance()
 
 void ResourceManager::loadTextures()
 {
-	textureHandles[Block::Dirt] = load_texture(GL_TEXTURE_2D, GL_RGB, "blocks/dirt.png");
-	textureHandles[Block::Sand] = load_texture(GL_TEXTURE_2D, GL_RGB, "blocks/sand.png");
-	textureHandles[Block::Grass] = load_texture(GL_TEXTURE_2D, GL_RGB, "blocks/grass.png");
-	textureHandles[Block::Stone] = load_texture(GL_TEXTURE_2D, GL_RGB, "blocks/stone.png");
-	textureHandles[Block::Wood] = load_texture(GL_TEXTURE_2D, GL_RGB, "blocks/wood.png");
-	textureHandles[Block::Leaves] = load_texture(GL_TEXTURE_2D, GL_RGB, "blocks/leaves.png");
+	textureHandles[Texture::Atlas] = load_texture(GL_TEXTURE_2D, GL_RGB, "blocks/texture_atlas.png");
+	textureHandles[Texture::Sun] = load_texture(GL_TEXTURE_2D, GL_RGB, "other/sun.png");
+	textureHandles[Texture::Moon] = load_texture(GL_TEXTURE_2D, GL_RGB, "other/moon_phases.png");
 }
 
 void ResourceManager::loadShaders()
