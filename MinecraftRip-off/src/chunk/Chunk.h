@@ -4,11 +4,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <array>
-#include <vector>
 #include "../Block/Block.h"
 #include "../utilities/Shader_util.h"
-#include "../block/Cube.h"
 #include "ChunkMesh.h"
+#include "ChunkCoordinate.h"
 
 class Chunk
 {
@@ -19,6 +18,9 @@ public:
 
 	void updateMesh();
 
+	void saveChunk();
+	void loadChunk();
+
 	void render(shader_prog& shader);
 
 private:
@@ -26,6 +28,7 @@ private:
 
 	int xPosition;
 	int zPosition;
+	ChunkCoordinate chunkCoord;
 
 	bool requiresUpdate = true;
 

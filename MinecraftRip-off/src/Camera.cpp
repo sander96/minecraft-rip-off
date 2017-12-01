@@ -6,7 +6,7 @@ Camera::Camera()
 {
 	Settings settings;
 	float aspectRatio = static_cast<float>(settings.getWidth()) / settings.getHeight();
-	perspective = glm::perspective(glm::radians(settings.getFov()), aspectRatio, 0.1f, 100.0f);
+	perspective = glm::perspective(glm::radians(settings.getFov()), aspectRatio, 0.1f, settings.getViewDistance());
 
 	position = glm::vec3(0.0, 0.0, 0.0);
 	lookAt = glm::vec3(0.0, 0.0, -1.0);

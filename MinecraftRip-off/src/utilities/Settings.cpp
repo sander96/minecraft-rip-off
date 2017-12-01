@@ -30,5 +30,9 @@ Settings::Settings()
 		{
 			sensitivity = std::stof(value);
 		}
+		else if (identifier == "view-distance")
+		{
+			viewDistance = std::stof(value);
+		}
 	}
 }

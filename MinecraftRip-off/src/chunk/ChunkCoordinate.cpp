@@ -25,5 +25,5 @@ bool operator!=(ChunkCoordinate lhs, ChunkCoordinate rhs)
 
 bool operator<(ChunkCoordinate lhs, ChunkCoordinate rhs)
 {
-	return lhs.distanceFromMiddle < rhs.distanceFromMiddle;
+	return lhs.x < rhs.x || (!(rhs.x < lhs.x) && lhs.z < rhs.z);
 }

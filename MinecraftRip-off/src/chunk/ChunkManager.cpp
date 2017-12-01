@@ -22,16 +22,50 @@ void ChunkManager::updateChunks(glm::vec3 playerPosition)
 
 		const int radius = 2;
 
+		for (auto& pair : chunks)
+		{
+			if (playerChunkCoord.distance(pair.first) <= radius)
+			{
+				ChunkCoordinate position = pair.first;
+				position.setDistance(playerChunkCoord.distance(position));
+
+				newChunks.insert({ position, std::move(pair.second) });
+			}
+			else
+			{
+				pair.second->saveChunk();
+			}
+		}
+
 		for (int i = -radius; i <= radius; ++i)
 		{
 			for (int j = -radius; j <= radius; ++j)
 			{
 				ChunkCoordinate position = glm::vec3(i * 16 + playerPosition[0], 0.0, j * 16 + playerPosition[2]);
 
+				auto it = std::find_if(newChunks.begin(), newChunks.end(), [position](auto& pair) { return pair.first == position; });
+
+				if (it != newChunks.end())
+				{
+					continue;
+				}
+
 				if (playerChunkCoord.distance(position) <= radius)
 				{
-					position.setDistance(playerChunkCoord.distance(position));
-					newChunks.insert({ position, createChunk(position) });
+					if (visitedChunks.find(position) == visitedChunks.end())	// chunk has never been loaded
+					{
+						position.setDistance(playerChunkCoord.distance(position));
+
+						newChunks.insert({ position, createChunk(position) });
+						visitedChunks.insert(position);
+					}
+					else
+					{
+						position.setDistance(playerChunkCoord.distance(position));
+						auto visitedChunk = std::make_unique<Chunk>(position.getX() * 16, position.getZ() * 16);
+						visitedChunk->loadChunk();
+						newChunks.insert({ position, std::move(visitedChunk) });
+					}
 				}
 			}
 		}
@@ -64,7 +98,7 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 		}
 	}
 
-	chunk->setBlock(Block::Leaves, 6, 6, 6);		// remove this
+	chunk->setBlock(Block::Leaves, 6, 6, 6);
 
 	return chunk;
 }
