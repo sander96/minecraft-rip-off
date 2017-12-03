@@ -26,6 +26,7 @@ private:
 	std::multimap<ChunkCoordinate, std::unique_ptr<Chunk>> chunks;	// maybe some other data structure
 	ChunkCoordinate previousPlayerPosition;
 	PerlinNoise perlinNoise;
+	PerlinNoise biome;
 	std::set<ChunkCoordinate> visitedChunks;
 };
 
