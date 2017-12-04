@@ -11,6 +11,7 @@ public:
 	float getFov() { return fov; }
 	float getSensitivity() { return sensitivity; }
 	float getViewDistance() { return viewDistance; }
+	int getChunkRadius() { return chunkRadius; }
 
 private:
 	unsigned width;
@@ -18,6 +19,7 @@ private:
 	float fov;
 	float sensitivity;
 	float viewDistance;
+	int chunkRadius;
 };
 
 #endif

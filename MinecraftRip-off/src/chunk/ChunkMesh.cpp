@@ -4,7 +4,7 @@
 
 namespace
 {
-	GLuint addVertex(std::vector<GLfloat>& vertexData, std::initializer_list<float> list)
+	GLuint addVertex(std::vector<GLfloat>& vertexData, std::initializer_list<float> list)	// hotspot
 	{
 		auto position = std::search(vertexData.begin(), vertexData.end(), list.begin(), list.end());
 
@@ -230,10 +230,10 @@ ChunkMesh& ChunkMesh::operator=(ChunkMesh&& chunkMesh)
 	return *this;
 }
 
-void ChunkMesh::updateChunkMesh(std::array<Block, 16 * 16 * 256>& blocks)
+void ChunkMesh::generateChunkMesh(std::array<Block, 16 * 16 * 256>& blocks)	// hotspot
 {
-	std::vector<GLfloat> vertexData;
-	std::vector<GLuint> indices;
+	vertexData.clear();
+	indices.clear();
 
 	int x = 0;
 	int y = 0;
@@ -327,8 +327,8 @@ void ChunkMesh::updateChunkMesh(std::array<Block, 16 * 16 * 256>& blocks)
 		{
 			auto uv = calculateUV(blocks[i], Face::Bottom);
 
-			GLuint bottomLeft = addVertex(vertexData, { x + -1.0f, y + -1.0f, z + -1.0f, uv.first[0], uv.second[1], 0.0f, -1.0f, 0.0f });		// bottom left
-			GLuint bottomRight = addVertex(vertexData, { x + 1.0f, y + -1.0f, z + -1.0f, uv.second[0], uv.second[1], 0.0f, -1.0f, 0.0f });		// bottom right
+			GLuint bottomLeft = addVertex(vertexData, { x + -1.0f, y + -1.0f, z + -1.0f, uv.first[0], uv.second[1], 0.0f, -1.0f, 0.0f });	// bottom left
+			GLuint bottomRight = addVertex(vertexData, { x + 1.0f, y + -1.0f, z + -1.0f, uv.second[0], uv.second[1], 0.0f, -1.0f, 0.0f });	// bottom right
 			GLuint topRight = addVertex(vertexData, { x + 1.0f, y + -1.0f, z + 1.0f, uv.second[0], uv.first[1], 0.0f, -1.0f, 0.0f });		// top right
 			GLuint topLeft = addVertex(vertexData, { x + -1.0f, y + -1.0f, z + 1.0f, uv.first[0], uv.first[1], 0.0f, -1.0f, 0.0f });		// top left
 
@@ -341,6 +341,14 @@ void ChunkMesh::updateChunkMesh(std::array<Block, 16 * 16 * 256>& blocks)
 	//std::cout << "Triangle count: " << indices.size() / 3 << std::endl;
 
 	indicesCount = indices.size();
+}
+
+void ChunkMesh::updateChunkMesh(bool& renderLocked)
+{
+	if (vertexData.empty() || indices.empty())
+	{
+		renderLocked = true;
+	}
 
 	glGenBuffers(1, &arrayBufferHandle);
 	glGenVertexArrays(1, &vertexArrayHandle);
@@ -368,6 +376,9 @@ void ChunkMesh::updateChunkMesh(std::array<Block, 16 * 16 * 256>& blocks)
 	glEnableVertexAttribArray(loc);
 	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (const GLvoid*)(5 * sizeof(float)));
 
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, ResourceManager::getInstance().getTextureHandle(Texture::Atlas));
+
 	glBindVertexArray(0);
 }
 
@@ -379,9 +390,6 @@ void ChunkMesh::render()
 
 	shader_prog& shader = ResourceManager::getInstance().getShaderHandle(Shader::Texture);
 	shader.uniformMatrix4fv("modelMatrix", matrix);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, ResourceManager::getInstance().getTextureHandle(Texture::Atlas));
 
 	glBindVertexArray(vertexArrayHandle);
 	glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, nullptr);

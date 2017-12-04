@@ -5,7 +5,7 @@
 ChunkManager::ChunkManager()
 	:
 	previousPlayerPosition{ glm::vec3(123.0, 0.0, 0.0) },	// to force chunk update
-	perlinNoise{}
+	radius{settings.getChunkRadius()}
 {
 	updateChunks(glm::vec3(0.0, 0.0, 0.0));
 }
@@ -20,20 +20,14 @@ void ChunkManager::updateChunks(glm::vec3 playerPosition)
 
 		std::multimap<ChunkCoordinate, std::unique_ptr<Chunk>> newChunks;
 
-		const int radius = 2;
+		chunks.insert({ playerChunkCoord, createChunk(playerChunkCoord) });
 
 		for (auto& pair : chunks)
 		{
-			if (playerChunkCoord.distance(pair.first) <= radius)
+			if (playerChunkCoord.distance(pair.first) > radius)
 			{
-				ChunkCoordinate position = pair.first;
-				position.setDistance(playerChunkCoord.distance(position));
-
-				newChunks.insert({ position, std::move(pair.second) });
-			}
-			else
-			{
-				pair.second->saveChunk();
+				concurrencyManager.addWriteTask([&pair]() {pair.second->saveChunk(); });
+				pair.second->deactivate();
 			}
 		}
 
@@ -43,9 +37,9 @@ void ChunkManager::updateChunks(glm::vec3 playerPosition)
 			{
 				ChunkCoordinate position = glm::vec3(i * 16 + playerPosition[0], 0.0, j * 16 + playerPosition[2]);
 
-				auto it = std::find_if(newChunks.begin(), newChunks.end(), [position](auto& pair) { return pair.first == position; });
+				auto it = std::find_if(chunks.begin(), chunks.end(), [position](auto& pair) { return pair.first == position; });
 
-				if (it != newChunks.end())
+				if (it != chunks.end())
 				{
 					continue;
 				}
@@ -54,25 +48,48 @@ void ChunkManager::updateChunks(glm::vec3 playerPosition)
 				{
 					if (visitedChunks.find(position) == visitedChunks.end())	// chunk has never been loaded
 					{
-						position.setDistance(playerChunkCoord.distance(position));
-
-						newChunks.insert({ position, createChunk(position) });
+						chunks.insert({ position, createChunk(position) });
 						visitedChunks.insert(position);
 					}
 					else
 					{
-						position.setDistance(playerChunkCoord.distance(position));
 						auto visitedChunk = std::make_unique<Chunk>(position.getX() * 16, position.getZ() * 16);
-						visitedChunk->loadChunk();
-						newChunks.insert({ position, std::move(visitedChunk) });
+						auto it = chunks.insert({ position, std::move(visitedChunk) });
+						concurrencyManager.addReadTask([it]() {it->second->loadChunk(); });
 					}
 				}
 			}
 		}
 
-		chunks = std::move(newChunks);
 		previousPlayerPosition = playerChunkCoord;
-		updateMesh();
+	}
+
+	for (auto& pair : chunks)
+	{
+		if (pair.second->requiresMeshUpdate())
+		{
+			pair.second->meshUpdateFlagOff();
+			concurrencyManager.addChunkMeshTask([&pair]() {pair.second->generateMesh(); });
+		}
+
+		pair.second->updateMesh();
+	}
+
+	concurrencyManager.updateTasks();
+
+	if (concurrencyManager.empty())
+	{
+		for (auto it = chunks.begin(); it != chunks.end();)
+		{
+			if (!(it->second->isActive()))
+			{
+				it = chunks.erase(it);
+			}
+			else
+			{
+				it = std::next(it);
+			}
+		}
 	}
 }
 
@@ -101,14 +118,6 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 	chunk->setBlock(Block::Leaves, 6, 6, 6);
 
 	return chunk;
-}
-
-void ChunkManager::updateMesh()
-{
-	for (auto& chunk : chunks)
-	{
-		chunk.second->updateMesh();
-	}
 }
 
 void ChunkManager::renderChunks()

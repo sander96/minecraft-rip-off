@@ -163,6 +163,7 @@
     <ClCompile Include="src\entities\Player.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\PlayState.cpp" />
+    <ClCompile Include="src\utilities\ConcurrencyManager.cpp" />
     <ClCompile Include="src\utilities\PerlinNoise.cpp" />
     <ClCompile Include="src\utilities\ResourceManager.cpp" />
     <ClCompile Include="src\utilities\Settings.cpp" />
@@ -181,11 +182,13 @@
     <ClInclude Include="src\chunk\ChunkMesh.h" />
     <ClInclude Include="src\entities\Player.h" />
     <ClInclude Include="src\PlayState.h" />
+    <ClInclude Include="src\utilities\ConcurrencyManager.h" />
     <ClInclude Include="src\utilities\PerlinNoise.h" />
     <ClInclude Include="src\utilities\Settings.h" />
     <ClInclude Include="src\utilities\Shader_util.h" />
     <ClInclude Include="src\utilities\ResourceManager.h" />
     <ClInclude Include="src\utilities\Texture_util.h" />
+    <ClInclude Include="src\utilities\ThreadPool.h" />
     <ClInclude Include="src\World.h" />
   </ItemGroup>
   <ItemGroup>
