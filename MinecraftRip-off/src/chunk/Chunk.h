@@ -8,6 +8,7 @@
 #include "../utilities/Shader_util.h"
 #include "ChunkMesh.h"
 #include "ChunkCoordinate.h"
+#include <atomic>
 
 class Chunk
 {
@@ -16,10 +17,19 @@ public:
 
 	void setBlock(Block block, unsigned int x, unsigned int y, unsigned int z);
 
+	void generateMesh();
 	void updateMesh();
 
 	void saveChunk();
 	void loadChunk();
+
+	bool requiresMeshUpdate() { return meshUpdateFlag; }
+
+	void meshUpdateFlagOff() { meshUpdateFlag = false; }
+
+	void deactivate() { active = false; }
+
+	bool isActive() { return active; }
 
 	void render(shader_prog& shader);
 
@@ -30,7 +40,14 @@ private:
 	int zPosition;
 	ChunkCoordinate chunkCoord;
 
-	bool requiresUpdate = true;
+	std::atomic<bool> active = true;
+
+	std::atomic<bool> meshUpdateFlag = true;
+
+	std::atomic<bool> requiresUpdate = true;
+
+
+	bool renderLocked = true;
 
 	std::array<Block, 16 * 16 * 256> blocks;
 	ChunkMesh chunkMesh;

@@ -20,7 +20,8 @@ public:
 	ChunkMesh(ChunkMesh&& chunkMesh);
 	ChunkMesh& operator=(ChunkMesh&& chunkMesh);
 
-	void updateChunkMesh(std::array<Block, 16 * 16 * 256>& blocks);
+	void generateChunkMesh(std::array<Block, 16 * 16 * 256>& blocks);
+	void updateChunkMesh(bool& renderLocked);
 
 	void render();
 
@@ -29,6 +30,9 @@ private:
 	GLuint arrayBufferHandle;
 	GLuint indicesHandle;
 	GLsizei indicesCount;
+
+	std::vector<GLfloat> vertexData;
+	std::vector<GLuint> indices;
 
 	int x;
 	int z;

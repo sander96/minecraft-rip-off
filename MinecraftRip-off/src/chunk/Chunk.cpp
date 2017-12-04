@@ -17,6 +17,12 @@ Chunk::Chunk(int x, int z)
 void Chunk::setBlock(Block block, unsigned int x, unsigned int y, unsigned int z)
 {
 	blocks[x + 16 * z + 256 * y] = block;
+	meshUpdateFlag = true;
+}
+
+void Chunk::generateMesh()
+{
+	chunkMesh.generateChunkMesh(blocks);
 	requiresUpdate = true;
 }
 
@@ -27,9 +33,10 @@ void Chunk::updateMesh()
 		return;
 	}
 
-	chunkMesh.updateChunkMesh(blocks);
+	chunkMesh.updateChunkMesh(renderLocked);
 
 	requiresUpdate = false;
+	renderLocked = false;
 }
 
 void Chunk::saveChunk()
@@ -120,7 +127,10 @@ void Chunk::loadChunk()
 
 void Chunk::render(shader_prog& shader)
 {
-	chunkMesh.render();
+	if (!renderLocked)
+	{
+		chunkMesh.render();
+	}
 }
 
 std::tuple<int, int, int> Chunk::getCoords(int index)

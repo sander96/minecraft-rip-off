@@ -10,6 +10,8 @@
 #include "../utilities/PerlinNoise.h"
 #include "ChunkCoordinate.h"
 #include <set>
+#include "../utilities/ConcurrencyManager.h"
+#include "../utilities/Settings.h"
 
 class ChunkManager
 {
@@ -19,15 +21,18 @@ public:
 	void updateChunks(glm::vec3 playerPosition);
 	std::unique_ptr<Chunk> createChunk(ChunkCoordinate coordinate);
 
-	void updateMesh();
 	void renderChunks();
 
 private:
-	std::multimap<ChunkCoordinate, std::unique_ptr<Chunk>> chunks;	// maybe some other data structure
+	std::multimap<ChunkCoordinate, std::unique_ptr<Chunk>> chunks;
 	ChunkCoordinate previousPlayerPosition;
-	PerlinNoise perlinNoise;
 	PerlinNoise biome;
+	PerlinNoise perlinNoise;
 	std::set<ChunkCoordinate> visitedChunks;
+
+	Settings settings;
+	const int radius;
+	ConcurrencyManager concurrencyManager;
 };
 
 #endif

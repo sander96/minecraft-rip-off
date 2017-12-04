@@ -9,7 +9,6 @@ public:
 	ChunkCoordinate(glm::vec3 position);
 
 	unsigned int distance(ChunkCoordinate chunkCoordinate);
-	void setDistance(unsigned int distance) { distanceFromMiddle = distance; }
 
 	friend bool operator==(ChunkCoordinate lhs, ChunkCoordinate rhs);
 	friend bool operator!=(ChunkCoordinate lhs, ChunkCoordinate rhs);
@@ -21,7 +20,6 @@ public:
 private:
 	int x;
 	int z;
-	unsigned int distanceFromMiddle;
 };
 
 #endif

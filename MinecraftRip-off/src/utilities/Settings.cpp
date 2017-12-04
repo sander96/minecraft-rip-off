@@ -34,5 +34,9 @@ Settings::Settings()
 		{
 			viewDistance = std::stof(value);
 		}
+		else if (identifier == "chunk-radius")
+		{
+			chunkRadius = std::stoi(value);
+		}
 	}
 }
