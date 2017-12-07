@@ -44,7 +44,7 @@ private:
 
 	std::atomic<bool> meshUpdateFlag = true;
 
-	std::atomic<bool> requiresUpdate = true;
+	std::atomic<bool> requiresUpdate = false;
 
 
 	bool renderLocked = true;

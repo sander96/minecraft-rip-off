@@ -3,6 +3,8 @@
 
 #include "chunk/ChunkManager.h"
 #include "entities/Player.h"
+#include "entities/Sun.h"
+#include "entities/Moon.h"
 
 class World
 {
@@ -14,9 +16,12 @@ public:
 	void render();
 
 private:
-	ChunkManager chunkManager;
-	Player player;
 	GLFWwindow* window;
+	ChunkManager chunkManager;
+
+	Player player;
+	Sun sun;
+	Moon moon;
 };
 
 #endif

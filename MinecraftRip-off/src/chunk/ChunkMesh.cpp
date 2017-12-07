@@ -348,13 +348,13 @@ void ChunkMesh::updateChunkMesh(bool& renderLocked)
 	if (vertexData.empty() || indices.empty())
 	{
 		renderLocked = true;
+		return;
 	}
 
-	glGenBuffers(1, &arrayBufferHandle);
 	glGenVertexArrays(1, &vertexArrayHandle);
-
 	glBindVertexArray(vertexArrayHandle);
 
+	glGenBuffers(1, &arrayBufferHandle);
 	glBindBuffer(GL_ARRAY_BUFFER, arrayBufferHandle);
 	glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(float), &vertexData[0], GL_STATIC_DRAW);
 
@@ -376,9 +376,6 @@ void ChunkMesh::updateChunkMesh(bool& renderLocked)
 	glEnableVertexAttribArray(loc);
 	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (const GLvoid*)(5 * sizeof(float)));
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, ResourceManager::getInstance().getTextureHandle(Texture::Atlas));
-
 	glBindVertexArray(0);
 }
 
@@ -392,6 +389,7 @@ void ChunkMesh::render()
 	shader.uniformMatrix4fv("modelMatrix", matrix);
 
 	glBindVertexArray(vertexArrayHandle);
+
 	glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, nullptr);
 	glBindVertexArray(0);
 }

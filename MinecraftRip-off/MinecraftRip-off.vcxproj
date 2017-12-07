@@ -160,7 +160,10 @@
     <ClCompile Include="src\chunk\ChunkCoordinate.cpp" />
     <ClCompile Include="src\chunk\ChunkManager.cpp" />
     <ClCompile Include="src\chunk\ChunkMesh.cpp" />
+    <ClCompile Include="src\entities\CelestialBody.cpp" />
+    <ClCompile Include="src\entities\Moon.cpp" />
     <ClCompile Include="src\entities\Player.cpp" />
+    <ClCompile Include="src\entities\Sun.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\PlayState.cpp" />
     <ClCompile Include="src\utilities\ConcurrencyManager.cpp" />
@@ -180,7 +183,10 @@
     <ClInclude Include="src\chunk\ChunkCoordinate.h" />
     <ClInclude Include="src\chunk\ChunkManager.h" />
     <ClInclude Include="src\chunk\ChunkMesh.h" />
+    <ClInclude Include="src\entities\CelestialBody.h" />
+    <ClInclude Include="src\entities\Moon.h" />
     <ClInclude Include="src\entities\Player.h" />
+    <ClInclude Include="src\entities\Sun.h" />
     <ClInclude Include="src\PlayState.h" />
     <ClInclude Include="src\utilities\ConcurrencyManager.h" />
     <ClInclude Include="src\utilities\PerlinNoise.h" />
@@ -200,7 +206,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\textures\blocks\texture_atlas.png" />
-    <Image Include="resources\textures\other\moon_phases.png" />
+    <Image Include="resources\textures\other\moon.png" />
     <Image Include="resources\textures\other\sun.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -20,7 +20,7 @@ void ResourceManager::loadTextures()
 {
 	textureHandles[Texture::Atlas] = load_texture(GL_TEXTURE_2D, GL_RGB, "blocks/texture_atlas.png");
 	textureHandles[Texture::Sun] = load_texture(GL_TEXTURE_2D, GL_RGB, "other/sun.png");
-	textureHandles[Texture::Moon] = load_texture(GL_TEXTURE_2D, GL_RGB, "other/moon_phases.png");
+	textureHandles[Texture::Moon] = load_texture(GL_TEXTURE_2D, GL_RGB, "other/moon.png");
 }
 
 void ResourceManager::loadShaders()

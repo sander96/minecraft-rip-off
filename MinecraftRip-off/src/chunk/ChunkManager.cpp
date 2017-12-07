@@ -135,6 +135,9 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 
 void ChunkManager::renderChunks()
 {
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, ResourceManager::getInstance().getTextureHandle(Texture::Atlas));
+
 	for (auto& chunk : chunks)
 	{
 		chunk.second->render(ResourceManager::getInstance().getShaderHandle(Shader::Texture));

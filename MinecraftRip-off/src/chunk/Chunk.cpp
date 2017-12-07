@@ -33,10 +33,10 @@ void Chunk::updateMesh()
 		return;
 	}
 
+	renderLocked = false;
 	chunkMesh.updateChunkMesh(renderLocked);
 
 	requiresUpdate = false;
-	renderLocked = false;
 }
 
 void Chunk::saveChunk()
