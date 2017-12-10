@@ -112,18 +112,30 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 			double j2 = (coordinate.getZ() * 16.0 + z) / 64.0;
 			double y2 = 40 * perlinNoise.noise(i2, j2, 0.8);
 
+			// Mountains
+			double i3 = (coordinate.getX() * 16.0 + x) / 64.0;
+			double j3 = (coordinate.getZ() * 16.0 + z) / 64.0;
+			double y3 = max(0.0, perlinNoise.noise(i3, j3, 0.8) - 0.6) * 100.0;
+
 			// Noise for different biomes
 			double b1 = (coordinate.getX() * 16.0 + x) / 200.0;
 			double b2 = (coordinate.getZ() * 16.0 + z) / 200.0;
 			double biomeType = biome.noise(b1, b2, 0.8);
 
-			if (biomeType > 0.6)
+			if (y1 + y2 + y3 < 20)
 			{
-				chunk->setBlock(Block::Sand, x, y1 + y2, z);
+				chunk->setBlock(Block::Water, x, 20, z);
 			}
-			else 
+			else
 			{
-				chunk->setBlock(Block::Grass, x, y1 + y2, z);
+				if (biomeType > 0.6)
+				{
+					chunk->setBlock(Block::Sand, x, y1 + y2 + y3, z);
+				}
+				else
+				{
+					chunk->setBlock(Block::Grass, x, y1 + y2 + y3, z);
+				}
 			}
 		}
 	}

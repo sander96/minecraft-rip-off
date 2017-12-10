@@ -1,30 +1,36 @@
 #include "Player.h"
 
+Player::Player(glm::vec3 pos)
+{
+	position = pos;
+	lookAt = glm::vec3(0.0, 0.0, -1.0);
+}
+
 void Player::processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_W))
 	{
-		camera.move(glm::vec3(0.0, 0.0, 0.1));
+		move(glm::vec3(0.0, 0.0, 0.3));
 	}
 	if (glfwGetKey(window, GLFW_KEY_A))
 	{
-		camera.move(glm::vec3(0.1, 0.0, 0.0));
+		move(glm::vec3(0.1, 0.0, 0.0));
 	}
 	if (glfwGetKey(window, GLFW_KEY_S))
 	{
-		camera.move(glm::vec3(0.0, 0.0, -0.1));
+		move(glm::vec3(0.0, 0.0, -0.1));
 	}
 	if (glfwGetKey(window, GLFW_KEY_D))
 	{
-		camera.move(glm::vec3(-0.1, 0.0, 0.0));
+		move(glm::vec3(-0.1, 0.0, 0.0));
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE))
 	{
-		camera.move(glm::vec3(0.0, 0.1, 0.0));
+		move(glm::vec3(0.0, 0.1, 0.0));
 	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT))
 	{
-		camera.move(glm::vec3(0.0, -0.1, 0.0));
+		move(glm::vec3(0.0, -0.1, 0.0));
 	}
 
 	double xpos, ypos;
@@ -33,8 +39,35 @@ void Player::processInput(GLFWwindow* window)
 	double dX = (xpos - settings.getWidth() / 2.0) * settings.getSensitivity();
 	double dY = (ypos - settings.getHeight() / 2.0)  * settings.getSensitivity();
 
-	camera.rotate(glm::vec2(-dX, dY));
+	rotate(glm::vec2(-dX, dY));
 	glfwSetCursorPos(window, settings.getWidth() / 2.0, settings.getHeight() / 2.0);
 
-	position = camera.getPosition();
+	camera.setPosition(position);
+	camera.setLookAt(lookAt);
+	camera.update();
+}
+
+void Player::move(glm::vec3 movement)
+{
+	glm::vec3 forwardVector = normalize(glm::vec3(lookAt.x, 0.0, lookAt.z));
+	glm::normalize(forwardVector);
+
+	//moving forward
+	position += movement[2] * forwardVector;
+
+	//moving left
+	leftVector = glm::cross(glm::vec3(0.0, 1.0, 0.0), forwardVector);
+	position += movement[0] * leftVector;
+
+	//moving up
+	position += movement[1] * glm::vec3(0.0, 1.0, 0.0);
+}
+
+void Player::rotate(glm::vec2 rotation)
+{
+	glm::vec3 forwardVector = normalize(glm::vec3(lookAt.x, 0.0, lookAt.z));
+	leftVector = glm::cross(glm::vec3(0.0, 1.0, 0.0), forwardVector);
+
+	lookAt = glm::rotate(glm::mat4(1.0f), glm::radians(rotation[0]), glm::vec3(0.0, 1.0, 0.0)) * glm::vec4(lookAt, 0.0);
+	lookAt = glm::rotate(glm::mat4(1.0f), glm::radians(rotation[1]), normalize(leftVector)) * glm::vec4(lookAt, 0.0);
 }

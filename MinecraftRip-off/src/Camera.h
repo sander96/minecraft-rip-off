@@ -11,8 +11,10 @@ class Camera
 public:
 	Camera();
 
-	void move(glm::vec3 movement);
-	void rotate(glm::vec2 rotation);
+	void setPosition(glm::vec3 p) { position = p; }
+	void setLookAt(glm::vec3 l) { lookAt = l; }
+	void update();
+
 	glm::mat4 getPerspective();
 	glm::mat4 getView();
 	glm::vec3 getPosition();

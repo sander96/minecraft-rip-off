@@ -153,6 +153,21 @@ namespace
 			uv.first = glm::vec2(80.0, 256.0);
 			uv.second = glm::vec2(96.0, 240.0);
 		}
+		else if (block == Block::Cactus)
+		{
+			uv.first = glm::vec2(96.0, 256.0);
+			uv.second = glm::vec2(112.0, 240.0);
+		}
+		else if (block == Block::Water)
+		{
+			uv.first = glm::vec2(113.0, 256.0);
+			uv.second = glm::vec2(127.0, 240.0);
+		}
+		else if (block == Block::Cloud)
+		{
+			uv.first = glm::vec2(128.0, 256.0);
+			uv.second = glm::vec2(144.0, 240.0);
+		}
 
 		if (face == Face::Side)
 		{

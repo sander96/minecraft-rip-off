@@ -1,7 +1,9 @@
 #include "World.h"
 
 World::World(GLFWwindow* win)
-	: window{ win }
+	: 
+	window{ win },
+	player { glm::vec3(0.0, 50.0, 0.0) }
 {
 
 }
