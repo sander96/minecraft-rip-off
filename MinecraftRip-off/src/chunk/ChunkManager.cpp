@@ -5,8 +5,8 @@
 ChunkManager::ChunkManager()
 	:
 	previousPlayerPosition{ glm::vec3(123.0, 0.0, 0.0) },	// to force chunk update
-	radius{settings.getChunkRadius()},
-	biome { PerlinNoise::PerlinNoise(100) }
+	radius{ settings.getChunkRadius() },
+	biome{ PerlinNoise::PerlinNoise(100) }
 {
 	updateChunks(glm::vec3(0.0, 0.0, 0.0));
 }
@@ -139,8 +139,6 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 			}
 		}
 	}
-
-	chunk->setBlock(Block::Leaves, 6, 6, 6);
 
 	return chunk;
 }

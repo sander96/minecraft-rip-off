@@ -6,20 +6,6 @@ namespace
 {
 	GLuint addVertex(std::vector<GLfloat>& vertexData, std::initializer_list<float> list)	// hotspot
 	{
-		auto position = std::search(vertexData.begin(), vertexData.end(), list.begin(), list.end());
-
-		while (position != vertexData.end())
-		{
-			int distance = std::distance(vertexData.begin(), position);
-
-			if (distance % list.size() == 0)
-			{
-				return distance;
-			}
-
-			position = std::search(std::next(position), vertexData.end(), list.begin(), list.end());
-		}
-
 		vertexData.insert(vertexData.end(), list);
 		return vertexData.size() / list.size() - 1;
 	}
