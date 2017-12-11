@@ -146,8 +146,8 @@ namespace
 		}
 		else if (block == Block::Water)
 		{
-			uv.first = glm::vec2(113.0, 256.0);
-			uv.second = glm::vec2(127.0, 240.0);
+			uv.first = glm::vec2(112.0, 256.0);
+			uv.second = glm::vec2(128.0, 240.0);
 		}
 		else if (block == Block::Cloud)
 		{
