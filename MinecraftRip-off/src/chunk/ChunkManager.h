@@ -12,15 +12,15 @@
 #include <set>
 #include "../utilities/ConcurrencyManager.h"
 #include "../utilities/Settings.h"
+#include "../entities/Picker.h"
 
 class ChunkManager
 {
 public:
 	ChunkManager();
 
-	void updateChunks(glm::vec3 playerPosition);
+	void updateChunks(glm::vec3 playerPosition,int seis,glm::vec3 ray);
 	std::unique_ptr<Chunk> createChunk(ChunkCoordinate coordinate);
-
 	void renderChunks();
 
 private:
@@ -29,10 +29,11 @@ private:
 	PerlinNoise biome;
 	PerlinNoise perlinNoise;
 	std::set<ChunkCoordinate> visitedChunks;
-
+	
 	Settings settings;
 	const int radius;
 	ConcurrencyManager concurrencyManager;
+	Picker picker;
 };
 
 #endif

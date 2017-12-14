@@ -16,7 +16,7 @@ public:
 	Chunk(int x, int z);
 
 	void setBlock(Block block, unsigned int x, unsigned int y, unsigned int z);
-
+	Block getBlock(unsigned int x, unsigned int y, unsigned int z);
 	void generateMesh();
 	void updateMesh();
 

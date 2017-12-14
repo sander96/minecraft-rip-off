@@ -1,4 +1,7 @@
 #include "Player.h"
+#include <iostream>
+#include "../chunk/chunk.h"
+#include "../chunk/ChunkManager.h"
 
 Player::Player(glm::vec3 pos)
 {
@@ -32,7 +35,7 @@ void Player::processInput(GLFWwindow* window)
 	{
 		move(glm::vec3(0.0, -0.1, 0.0));
 	}
-
+	
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
 
@@ -41,10 +44,30 @@ void Player::processInput(GLFWwindow* window)
 
 	rotate(glm::vec2(-dX, dY));
 	glfwSetCursorPos(window, settings.getWidth() / 2.0, settings.getHeight() / 2.0);
-
 	camera.setPosition(position);
 	camera.setLookAt(lookAt);
 	camera.update();
+	picker.setCamera(camera);
+	picker.setProjectionMat(camera.getPerspective());
+	picker.setwindow(window);
+	picker.update();
+	//ray näitab umbes asukohta ja kui ntks kaugusel mängijast +3 on mingi asi, siis eemalda või lisa
+	//mingi jama sellega ikka, kuidagi mitu klikki võtab..
+	if (glfwGetKey(window, GLFW_KEY_E))
+	{
+		std::cout << "lisan" << std::endl;
+		glm::vec3 valja = picker.getCurrentRay();
+		SetRay(valja);
+		SetLisamine();
+	}
+	if (glfwGetKey(window, GLFW_KEY_Q)) {
+		std::cout << "kustutan" << std::endl;
+		glm::vec3 valja = picker.getCurrentRay();
+		SetRay(valja);
+		SetEemaldus();
+	}
+
+		
 }
 
 void Player::move(glm::vec3 movement)

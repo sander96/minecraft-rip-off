@@ -13,7 +13,8 @@ void World::update()
 	player.processInput(window);
 	sun.update(player.getPosition());
 	moon.update(player.getPosition());
-	chunkManager.updateChunks(player.getPosition());
+	chunkManager.updateChunks(player.getPosition(),player.getSeis(),player.getRay());
+	player.SetMidagi();
 }
 
 void World::render()
