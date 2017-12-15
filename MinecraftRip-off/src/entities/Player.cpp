@@ -92,5 +92,14 @@ void Player::rotate(glm::vec2 rotation)
 	leftVector = glm::cross(glm::vec3(0.0, 1.0, 0.0), forwardVector);
 
 	lookAt = glm::rotate(glm::mat4(1.0f), glm::radians(rotation[0]), glm::vec3(0.0, 1.0, 0.0)) * glm::vec4(lookAt, 0.0);
-	lookAt = glm::rotate(glm::mat4(1.0f), glm::radians(rotation[1]), normalize(leftVector)) * glm::vec4(lookAt, 0.0);
+
+	if (rotation[1] < 0 && lookAt.y < 0.98) 
+	{
+
+		lookAt = glm::rotate(glm::mat4(1.0f), glm::radians(rotation[1]), normalize(leftVector)) * glm::vec4(lookAt, 0.0);
+	}
+	else if (rotation[1] > 0 && lookAt.y > -0.98)
+	{
+		lookAt = glm::rotate(glm::mat4(1.0f), glm::radians(rotation[1]), normalize(leftVector)) * glm::vec4(lookAt, 0.0);
+	}
 }

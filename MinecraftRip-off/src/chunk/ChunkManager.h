@@ -24,6 +24,9 @@ public:
 	void renderChunks();
 
 private:
+	void ChunkManager::createCactus(int x, int y, int z, int size, std::unique_ptr<Chunk> const& chunk);
+	void ChunkManager::createTree(int x, int y, int z, std::unique_ptr<Chunk> const& chunk);
+
 	std::multimap<ChunkCoordinate, std::unique_ptr<Chunk>> chunks;
 	ChunkCoordinate previousPlayerPosition;
 	PerlinNoise biome;

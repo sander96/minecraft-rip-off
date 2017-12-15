@@ -172,7 +172,15 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 
 			if (y1 + y2 + y3 < 20)
 			{
-				chunk->setBlock(Block::Water, x, 20, z);
+				for (int i = y1 + y2 + y3; i <= 20; i++)
+				{
+					chunk->setBlock(Block::Water, x, i, z);
+				}
+				
+				for (int i = 0; i < y1 + y2 + y3 - 1; i++)
+				{
+					chunk->setBlock(Block::Dirt, x, i, z);
+				}
 			}
 			else
 			{
@@ -180,71 +188,92 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 				{
 					if (x == 2 && z == 3)
 					{
-						int size = 5;
-						int y = y1 + y2 + y3;
-						for (int i = 0; i < size;i++) {
-							chunk->setBlock(Block::Cactus, x, y + i, z);
-						}
+						createCactus(x, y1 + y2 + y3, z, 5, chunk);
 					}
-					else {
-						chunk->setBlock(Block::Sand, x, y1 + y2 + y3, z);
+
+					for (int i = 0; i <= y1 + y2 + y3; i++)
+					{
+						chunk->setBlock(Block::Sand, x, i, z);
 					}
 				}
 				else
 				{
 					if (x == 2 && z == 3 || x == 8 && z == 6)
 					{
-						//SIZE peab olema kuidagi seotud noisega, siis suvalise suurusega puud..
-						int size = floor(y1);
-						int y = y1 + y2 + y3;
-						//tüvi
-						for (int i = 0; i < size;i++) {
-							chunk->setBlock(Block::Wood, x, y + i, z);
-						}
-						//lehed ümber?
-						int muutuja = 2;
-						if (size > 5) {
-							muutuja = 3;
-						}
-						for (int i = 0;i < size / 2 + 1;i++) {
-							if (i == size / 2 - 1) {
-								muutuja = 2;
-							}
-							if (i == size / 2) {
-								for (int p = -muutuja + 1;p < muutuja;p++)
-								{
-									chunk->setBlock(Block::Leaves, x, y + size - 1 + i, z + p);
-									chunk->setBlock(Block::Leaves, x + p, y + size - 1 + i, z);
-								}
-							}
-							else {
-								for (int j = -muutuja + 1;j < muutuja;j++) {
-									for (int p = -muutuja + 1;p < muutuja;p++) {
-										if (j != 0 || p != 0 || i > 0) {
-											chunk->setBlock(Block::Leaves, x + j, y + size - 1 + i, z + p);
+						createTree(x, y1+y2+y3, z, chunk);
+					}
 
-										}
-									}
-								}
-								if (muutuja == 3 && i == size / 2 - 2) {
-									chunk->setBlock(Block::Air, x + muutuja - 1, y + size - 1 + i, z + muutuja - 1);
-									chunk->setBlock(Block::Air, x - muutuja + 1, y + size - 1 + i, z + muutuja - 1);
-									chunk->setBlock(Block::Air, x + muutuja - 1, y + size - 1 + i, z - muutuja + 1);
-									chunk->setBlock(Block::Air, x - muutuja + 1, y + size - 1 + i, z - muutuja + 1);
-								}
-							}
-						}
-						chunk->setBlock(Block::Leaves, x, y + size + size / 2, z);
-					}
-					else
+					for (int i = 0; i < y1 + y2 + y3; i++)
 					{
-						chunk->setBlock(Block::Grass, x, y1 + y2 + y3, z);
+						chunk->setBlock(Block::Dirt, x, i, z);
 					}
+					chunk->setBlock(Block::Grass, x, y1 + y2 + y3, z);
 				}
 			}
 		}
 	}
 	return chunk;
+}
+
+
+void ChunkManager::createCactus(int x, int y, int z, int size, std::unique_ptr<Chunk> const& chunk)
+{
+	for (int i = 1; i < size+1; i++) {
+		chunk->setBlock(Block::Cactus, x, y + i, z);
+	}
+}
+
+void ChunkManager::createTree(int x, int y, int z, std::unique_ptr<Chunk> const& chunk)
+{
+	//SIZE peab olema kuidagi seotud noisega, siis suvalise suurusega puud..
+	int size = 5 + y%4;
+	//tüvi
+	for (int i = 1; i < size+1; i++) 
+	{
+		chunk->setBlock(Block::Wood, x, y + i, z);
+	}
+	//lehed ümber?
+	int muutuja = 2;
+	if (size > 5) {
+		muutuja = 3;
+	}
+	for (int i = 0; i < size / 2 + 1; i++) 
+	{
+		if (i == size / 2 - 1) 
+		{
+			muutuja = 2;
+		}
+		if (i == size / 2) 
+		{
+			for (int p = -muutuja + 1; p < muutuja; p++)
+			{
+				chunk->setBlock(Block::Leaves, x, y + size - 1 + i, z + p);
+				chunk->setBlock(Block::Leaves, x + p, y + size - 1 + i, z);
+			}
+		}
+		else 
+		{
+			for (int j = -muutuja + 1; j < muutuja; j++) 
+			{
+				for (int p = -muutuja + 1; p < muutuja; p++) 
+				{
+					if (j != 0 || p != 0 || i > 0) 
+					{
+						chunk->setBlock(Block::Leaves, x + j, y + size - 1 + i, z + p);
+
+					}
+				}
+			}
+			if (muutuja == 3 && i == size / 2 - 2) 
+			{
+				chunk->setBlock(Block::Air, x + muutuja - 1, y + size - 1 + i, z + muutuja - 1);
+				chunk->setBlock(Block::Air, x - muutuja + 1, y + size - 1 + i, z + muutuja - 1);
+				chunk->setBlock(Block::Air, x + muutuja - 1, y + size - 1 + i, z - muutuja + 1);
+				chunk->setBlock(Block::Air, x - muutuja + 1, y + size - 1 + i, z - muutuja + 1);
+			}
+		}
+	}
+	chunk->setBlock(Block::Leaves, x, y + size + size / 2, z);
 }
 
 void ChunkManager::renderChunks()
