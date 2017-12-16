@@ -17,7 +17,7 @@ public:
 	glm::vec3 getPosition() { return position; }
 	glm::mat4 getCameraPerspective() { return camera.getPerspective(); };
 	glm::mat4 getCameraView() { return camera.getView(); }
-	glm::vec3 getRay() { return camera.getDirection(); }
+	glm::vec3 getCameraDirection() { return camera.getDirection(); }
 
 	bool removeBlockEvent() { return removeBlock; }
 	bool addBlockEvent() { return addBlock; }

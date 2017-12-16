@@ -20,7 +20,6 @@ void ChunkManager::updateChunks(Player& player)
 	{
 		std::cout << "Player entered to a new chunk" << std::endl;	// debugging info
 		std::multimap<ChunkCoordinate, std::unique_ptr<Chunk>> newChunks;
-		chunks.insert({ playerChunkCoord, createChunk(playerChunkCoord) });
 
 		for (auto& pair : chunks)
 		{
@@ -170,15 +169,18 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 
 void ChunkManager::rayCast(Player& player)
 {
+	if (!concurrencyManager.empty())	// temporary hack to avoid data races
+		return;
+
 	auto playerPosition = player.getPosition();
 	ChunkCoordinate playerChunkCoord{ playerPosition };
-	auto ray = player.getRay();
+	auto ray = player.getCameraDirection();
 
 	int maxDistance = 4;
 
 	if (player.addBlockEvent())		// TODO
 	{
-		std::cout << "Adding a block" << std::endl;	// remove this when removing/adding works
+		//std::cout << "Adding a block" << std::endl;	// remove this when removing/adding works
 
 		//auto& currChunk = chunks.find(playerChunkCoord);
 		////kui kaugule saame blokke panna
@@ -204,8 +206,6 @@ void ChunkManager::rayCast(Player& player)
 	}
 	else if (player.removeBlockEvent())
 	{
-		std::cout << "Removing a block" << std::endl;	// remove this when removing/adding works
-
 		//std::cout << std::fixed << ray.x << " " << ray.y << " " << ray.z << std::endl;
 		// not sure how ray tracing works but I use small steps to increment the direction vector; probably not accurate
 
@@ -228,6 +228,7 @@ void ChunkManager::rayCast(Player& player)
 
 				if ((*chunk)->getBlock(x, y, z) != Block::Air)
 				{
+					std::cout << "Removing a block" << std::endl;	// remove this when removing/adding works
 					(*chunk)->setBlock(Block::Air, x, y, z);
 					std::cout << x << " " << y << " " << z << std::endl;
 					break;
