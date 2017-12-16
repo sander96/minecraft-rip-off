@@ -32,3 +32,5 @@ You need:
 | D             | Move right         |
 | Space         | Move up            |
 | Shift         | Move down          |
+| LMB           | Remove block       |
+| RMB           | Add block          |
