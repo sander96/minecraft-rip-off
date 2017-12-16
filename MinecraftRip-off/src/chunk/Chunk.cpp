@@ -19,7 +19,8 @@ void Chunk::setBlock(Block block, unsigned int x, unsigned int y, unsigned int z
 	blocks[x + 16 * z + 256 * y] = block;
 	meshUpdateFlag = true;
 }
-Block Chunk::getBlock(unsigned int x, unsigned int y, unsigned int z) {
+Block Chunk::getBlock(unsigned int x, unsigned int y, unsigned int z)
+{
 	return blocks[x + 16 * z + 256 * y];
 }
 

@@ -162,7 +162,6 @@
     <ClCompile Include="src\chunk\ChunkMesh.cpp" />
     <ClCompile Include="src\entities\CelestialBody.cpp" />
     <ClCompile Include="src\entities\Moon.cpp" />
-    <ClCompile Include="src\entities\Picker.cpp" />
     <ClCompile Include="src\entities\Player.cpp" />
     <ClCompile Include="src\entities\Sun.cpp" />
     <ClCompile Include="src\Main.cpp" />

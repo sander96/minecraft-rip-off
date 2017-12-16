@@ -6,7 +6,7 @@ uniform sampler2D tex;
 in vec3 interpolatedNormal;
 in vec3 interpolatedPosition;
 in vec2 interpolatedUv;
-//klassiarvutis, et töötaks
+
 out vec4 fragColor;
 
 

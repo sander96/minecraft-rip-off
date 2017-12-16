@@ -4,7 +4,7 @@
 
 namespace
 {
-	GLuint addVertex(std::vector<GLfloat>& vertexData, std::initializer_list<float> list)	// hotspot
+	GLuint addVertex(std::vector<GLfloat>& vertexData, std::initializer_list<float> list)
 	{
 		vertexData.insert(vertexData.end(), list);
 		return vertexData.size() / list.size() - 1;
@@ -231,7 +231,7 @@ ChunkMesh& ChunkMesh::operator=(ChunkMesh&& chunkMesh)
 	return *this;
 }
 
-void ChunkMesh::generateChunkMesh(std::array<Block, 16 * 16 * 256>& blocks)	// hotspot
+void ChunkMesh::generateChunkMesh(std::array<Block, 16 * 16 * 256>& blocks)
 {
 	vertexData.clear();
 	indices.clear();

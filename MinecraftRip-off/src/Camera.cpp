@@ -40,3 +40,8 @@ glm::vec3 Camera::getPosition()
 {
 	return position;
 }
+
+glm::vec3 Camera::getDirection()
+{
+	return -glm::vec3(glm::inverse(view)[2]);
+}

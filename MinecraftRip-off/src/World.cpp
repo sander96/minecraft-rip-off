@@ -1,9 +1,9 @@
 #include "World.h"
 
 World::World(GLFWwindow* win)
-	: 
+	:
 	window{ win },
-	player { glm::vec3(0.0, 50.0, 0.0) }
+	player{ glm::vec3(0.0, 50.0, 0.0) }
 {
 
 }
@@ -11,10 +11,11 @@ World::World(GLFWwindow* win)
 void World::update()
 {
 	player.processInput(window);
+
 	sun.update(player.getPosition());
 	moon.update(player.getPosition());
-	chunkManager.updateChunks(player.getPosition(),player.getSeis(),player.getRay());
-	player.SetMidagi();
+
+	chunkManager.updateChunks(player);
 }
 
 void World::render()

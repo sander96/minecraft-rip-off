@@ -17,6 +17,7 @@ public:
 
 	void setBlock(Block block, unsigned int x, unsigned int y, unsigned int z);
 	Block getBlock(unsigned int x, unsigned int y, unsigned int z);
+
 	void generateMesh();
 	void updateMesh();
 
@@ -45,7 +46,6 @@ private:
 	std::atomic<bool> meshUpdateFlag = true;
 
 	std::atomic<bool> requiresUpdate = false;
-
 
 	bool renderLocked = true;
 

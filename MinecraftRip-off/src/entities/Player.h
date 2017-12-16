@@ -6,29 +6,26 @@
 #include "glm/glm.hpp"
 #include "../Camera.h"
 #include "../utilities/Settings.h"
-#include "Picker.h"
+#include <iostream>
 
 class Player
 {
 public:
 	Player(glm::vec3 pos);
 	void processInput(GLFWwindow* window);
-	int getSeis() { return seis; };
 
 	glm::vec3 getPosition() { return position; }
 	glm::mat4 getCameraPerspective() { return camera.getPerspective(); };
 	glm::mat4 getCameraView() { return camera.getView(); }
-	void SetEemaldus() { seis = -1; };
-	void SetLisamine() { seis = 1; };
-	void SetMidagi() { seis = 0; };
-	void SetRay(glm::vec3 lisa) {
-		ray = lisa;
-	};
-	glm::vec3 getRay() {
-		return ray;
-	};
+	glm::vec3 getRay() { return camera.getDirection(); }
+
+	bool removeBlockEvent() { return removeBlock; }
+	bool addBlockEvent() { return addBlock; }
 
 private:
+	void processMovement(GLFWwindow* window);
+	void processMouse(GLFWwindow* window);
+
 	void move(glm::vec3 movement);
 	void rotate(glm::vec2 rotation);
 
@@ -37,9 +34,9 @@ private:
 	glm::vec3 leftVector;
 	Camera camera;
 	Settings settings;
-	int seis;
-	glm::vec3 ray;
-	Picker picker;
+
+	bool removeBlock = false;
+	bool addBlock = false;
 };
 
 #endif

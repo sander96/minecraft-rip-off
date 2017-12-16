@@ -11,6 +11,12 @@ Player::Player(glm::vec3 pos)
 
 void Player::processInput(GLFWwindow* window)
 {
+	processMovement(window);
+	processMouse(window);
+}
+
+void Player::processMovement(GLFWwindow* window)
+{
 	if (glfwGetKey(window, GLFW_KEY_W))
 	{
 		move(glm::vec3(0.0, 0.0, 0.3));
@@ -35,7 +41,10 @@ void Player::processInput(GLFWwindow* window)
 	{
 		move(glm::vec3(0.0, -0.1, 0.0));
 	}
-	
+}
+
+void Player::processMouse(GLFWwindow* window)
+{
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
 
@@ -47,27 +56,18 @@ void Player::processInput(GLFWwindow* window)
 	camera.setPosition(position);
 	camera.setLookAt(lookAt);
 	camera.update();
-	picker.setCamera(camera);
-	picker.setProjectionMat(camera.getPerspective());
-	picker.setwindow(window);
-	picker.update();
-	//ray näitab umbes asukohta ja kui ntks kaugusel mängijast +3 on mingi asi, siis eemalda või lisa
-	//mingi jama sellega ikka, kuidagi mitu klikki võtab..
-	if (glfwGetKey(window, GLFW_KEY_E))
-	{
-		std::cout << "lisan" << std::endl;
-		glm::vec3 valja = picker.getCurrentRay();
-		SetRay(valja);
-		SetLisamine();
-	}
-	if (glfwGetKey(window, GLFW_KEY_Q)) {
-		std::cout << "kustutan" << std::endl;
-		glm::vec3 valja = picker.getCurrentRay();
-		SetRay(valja);
-		SetEemaldus();
-	}
 
-		
+	removeBlock = false;
+	addBlock = false;
+
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))
+	{
+		removeBlock = true;
+	}
+	else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT))
+	{
+		addBlock = true;
+	}
 }
 
 void Player::move(glm::vec3 movement)
@@ -95,7 +95,6 @@ void Player::rotate(glm::vec2 rotation)
 
 	if (rotation[1] < 0 && lookAt.y < 0.98) 
 	{
-
 		lookAt = glm::rotate(glm::mat4(1.0f), glm::radians(rotation[1]), normalize(leftVector)) * glm::vec4(lookAt, 0.0);
 	}
 	else if (rotation[1] > 0 && lookAt.y > -0.98)

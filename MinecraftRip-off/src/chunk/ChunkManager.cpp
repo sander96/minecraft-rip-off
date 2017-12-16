@@ -1,7 +1,6 @@
 #include "ChunkManager.h"
 #include "../Block/Cube.h"
 #include <stdlib.h>
-#include "../entities/Picker.h"
 
 ChunkManager::ChunkManager()
 	:
@@ -9,11 +8,12 @@ ChunkManager::ChunkManager()
 	radius{ settings.getChunkRadius() },
 	biome{ PerlinNoise::PerlinNoise(100) }
 {
-	updateChunks(glm::vec3(0.0, 0.0, 0.0),0,glm::vec3(0,0,0));
+
 }
 
-void ChunkManager::updateChunks(glm::vec3 playerPosition,int seis,glm::vec3 ray)
+void ChunkManager::updateChunks(Player& player)
 {
+	auto playerPosition = player.getPosition();
 	ChunkCoordinate playerChunkCoord{ playerPosition };
 
 	if (playerChunkCoord != previousPlayerPosition)		// true if player entered to a new chunk
@@ -64,6 +64,8 @@ void ChunkManager::updateChunks(glm::vec3 playerPosition,int seis,glm::vec3 ray)
 		previousPlayerPosition = playerChunkCoord;
 	}
 
+	rayCast(player);
+
 	for (auto& pair : chunks)
 	{
 		if (pair.second->requiresMeshUpdate())
@@ -91,61 +93,12 @@ void ChunkManager::updateChunks(glm::vec3 playerPosition,int seis,glm::vec3 ray)
 			}
 		}
 	}
-	//seis == 1 kutsub välja bloki lisamise
-	// veel on buggine, kuna funktsioon ei oska teise chunki lisada ja selle asemele alusatab teiselt poolt
-	//ntks kui lisad blocki olles ise 0,0,0, siis mõned lähevad neist 16,0,0 ja 0,0,16..
-	if (seis == 1) {
-		auto& currChunk = chunks.find(playerChunkCoord);
-		//kui kaugule saame blokke panna
-		int kaugus = 4;
-		//et ei paneks lambist õhku blokki, siis kontroll, et temast tagapool ikka on blokk..
-			std::cout << ray.x << "," << ray.y << "," << ray.z << std::endl;
-			int temp = 0;
-			bool found = false;
-			//kas on kuni kauguseni vaba(et ei paneks teiste blokkide taha, vaid ette)
-			for (int i = 0;i <= kaugus;i++) {
-				if (currChunk->second->getBlock(playerPosition.x + ray.x*i, playerPosition.y + ray.y*i, playerPosition.z + ray.z*i) != Block::Air) {
-					temp = i - 1;
-					found = true;
-				}
-			}
-			if (found == true) {
-				kaugus = temp;
-			}
-			//selleks,et lampi õhku ei saaks blokke riputada..
-			if (currChunk->second->getBlock(playerPosition.x + ray.x*(kaugus + 1), playerPosition.y + ray.y*(kaugus + 1), playerPosition.z + ray.z*(kaugus + 1)) != Block::Air) {
-				currChunk->second->setBlock(Block::Stone, playerPosition.x + ray.x*kaugus, playerPosition.y + ray.y*kaugus, playerPosition.z + ray.z*kaugus);
-			}
-			seis = 0;
-	}
-	//seis == -1 on eemaldamiseks.
-	//miski pärast kustutab ainult neid blokke, mille oleme ise lisanud..
-	if (seis == -1) {
-		auto& currChunk = chunks.find(playerChunkCoord);
-		//kui kaugule saame blokke panna
-		int kaugus = 4;
-		std::cout << ray.x << "," << ray.y << "," << ray.z << std::endl;//enda jaoks
-		int temp = 0;
-		bool found = false;
-		//kas on kuni kauguseni vaba(et kustutaks ainult seda, mis on kõige ees)
-		for (int i = 0;i <= kaugus;i++) {
-			if (currChunk->second->getBlock(playerPosition.x + ray.x*i, playerPosition.y + ray.y*i, playerPosition.z + ray.z*i) != Block::Air) {
-				temp = i;
-				found = true;
-			}
-		}
-		if (found == true) {
-			kaugus = temp;
-		}
-		currChunk->second->setBlock(Block::Air, playerPosition.x + ray.x*kaugus, playerPosition.y + ray.y*kaugus, playerPosition.z + ray.z*kaugus);
-		seis = 0;
-	}
 }
 
 std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 {
 	std::unique_ptr<Chunk> chunk = std::make_unique<Chunk>(coordinate.getX() * 16, coordinate.getZ() * 16);
-	std::cout << "Chunk" << coordinate.getX() << ";" << coordinate.getZ() << std::endl;
+
 	for (int x = 0; x < 16; ++x)
 	{
 		for (int z = 0; z < 16; ++z)
@@ -176,7 +129,7 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 				{
 					chunk->setBlock(Block::Water, x, i, z);
 				}
-				
+
 				for (int i = 0; i < y1 + y2 + y3 - 1; i++)
 				{
 					chunk->setBlock(Block::Dirt, x, i, z);
@@ -200,7 +153,7 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 				{
 					if (x == 2 && z == 3 || x == 8 && z == 6)
 					{
-						createTree(x, y1+y2+y3, z, chunk);
+						createTree(x, y1 + y2 + y3, z, chunk);
 					}
 
 					for (int i = 0; i < y1 + y2 + y3; i++)
@@ -215,20 +168,104 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 	return chunk;
 }
 
-
-void ChunkManager::createCactus(int x, int y, int z, int size, std::unique_ptr<Chunk> const& chunk)
+void ChunkManager::rayCast(Player& player)
 {
-	for (int i = 1; i < size+1; i++) {
+	auto playerPosition = player.getPosition();
+	ChunkCoordinate playerChunkCoord{ playerPosition };
+	auto ray = player.getRay();
+
+	int maxDistance = 4;
+
+	if (player.addBlockEvent())		// TODO
+	{
+		std::cout << "Adding a block" << std::endl;	// remove this when removing/adding works
+
+		//auto& currChunk = chunks.find(playerChunkCoord);
+		////kui kaugule saame blokke panna
+		//int kaugus = 4;
+		////et ei paneks lambist õhku blokki, siis kontroll, et temast tagapool ikka on blokk..
+		//std::cout << ray.x << "," << ray.y << "," << ray.z << std::endl;
+		//int temp = 0;
+		//bool found = false;
+		////kas on kuni kauguseni vaba(et ei paneks teiste blokkide taha, vaid ette)
+		//for (int i = 0; i <= kaugus; i++) {
+		//	if (currChunk->second->getBlock(playerPosition.x + ray.x*i, playerPosition.y + ray.y*i, playerPosition.z + ray.z*i) != Block::Air) {
+		//		temp = i - 1;
+		//		found = true;
+		//	}
+		//}
+		//if (found == true) {
+		//	kaugus = temp;
+		//}
+		////selleks,et lampi õhku ei saaks blokke riputada..
+		//if (currChunk->second->getBlock(playerPosition.x + ray.x*(kaugus + 1), playerPosition.y + ray.y*(kaugus + 1), playerPosition.z + ray.z*(kaugus + 1)) != Block::Air) {
+		//	currChunk->second->setBlock(Block::Stone, playerPosition.x + ray.x*kaugus, playerPosition.y + ray.y*kaugus, playerPosition.z + ray.z*kaugus);
+		//}
+	}
+	else if (player.removeBlockEvent())
+	{
+		std::cout << "Removing a block" << std::endl;	// remove this when removing/adding works
+
+		//std::cout << std::fixed << ray.x << " " << ray.y << " " << ray.z << std::endl;
+		// not sure how ray tracing works but I use small steps to increment the direction vector; probably not accurate
+
+		double step = 0.1;
+
+		auto trace = glm::vec3(0.0, 0.0, 0.0);
+
+		for (double c = 1; glm::length(trace) <= maxDistance; c += step)
+		{
+			trace = glm::vec3(ray.x * c, ray.y * c, ray.z * c);
+			auto tracePosition = playerPosition + trace;
+
+			auto chunk = worldCoordToChunk(tracePosition);
+
+			if (chunk != nullptr)
+			{
+				int x = static_cast<int>(tracePosition.x) % 16;
+				int y = static_cast<int>(tracePosition.y) % 256;
+				int z = static_cast<int>(tracePosition.z) % 16;
+
+				if ((*chunk)->getBlock(x, y, z) != Block::Air)
+				{
+					(*chunk)->setBlock(Block::Air, x, y, z);
+					std::cout << x << " " << y << " " << z << std::endl;
+					break;
+				}
+			}
+		}
+	}
+}
+
+// check for nullptr
+std::unique_ptr<Chunk>* ChunkManager::worldCoordToChunk(glm::vec3 worldCoordinate)
+{
+	ChunkCoordinate chunkCoordinate = worldCoordinate;
+
+	auto iterator = chunks.find(worldCoordinate);
+
+	if (iterator == chunks.end())
+	{
+		return nullptr;
+	}
+
+	return &(iterator->second);
+}
+
+void ChunkManager::createCactus(int x, int y, int z, int size, const std::unique_ptr<Chunk>& chunk)
+{
+	for (int i = 1; i < size + 1; i++)
+	{
 		chunk->setBlock(Block::Cactus, x, y + i, z);
 	}
 }
 
-void ChunkManager::createTree(int x, int y, int z, std::unique_ptr<Chunk> const& chunk)
+void ChunkManager::createTree(int x, int y, int z, const std::unique_ptr<Chunk>& chunk)
 {
 	//SIZE peab olema kuidagi seotud noisega, siis suvalise suurusega puud..
-	int size = 5 + y%4;
+	int size = 5 + y % 4;
 	//tüvi
-	for (int i = 1; i < size+1; i++) 
+	for (int i = 1; i < size + 1; i++)
 	{
 		chunk->setBlock(Block::Wood, x, y + i, z);
 	}
@@ -237,13 +274,13 @@ void ChunkManager::createTree(int x, int y, int z, std::unique_ptr<Chunk> const&
 	if (size > 5) {
 		muutuja = 3;
 	}
-	for (int i = 0; i < size / 2 + 1; i++) 
+	for (int i = 0; i < size / 2 + 1; i++)
 	{
-		if (i == size / 2 - 1) 
+		if (i == size / 2 - 1)
 		{
 			muutuja = 2;
 		}
-		if (i == size / 2) 
+		if (i == size / 2)
 		{
 			for (int p = -muutuja + 1; p < muutuja; p++)
 			{
@@ -251,20 +288,20 @@ void ChunkManager::createTree(int x, int y, int z, std::unique_ptr<Chunk> const&
 				chunk->setBlock(Block::Leaves, x + p, y + size - 1 + i, z);
 			}
 		}
-		else 
+		else
 		{
-			for (int j = -muutuja + 1; j < muutuja; j++) 
+			for (int j = -muutuja + 1; j < muutuja; j++)
 			{
-				for (int p = -muutuja + 1; p < muutuja; p++) 
+				for (int p = -muutuja + 1; p < muutuja; p++)
 				{
-					if (j != 0 || p != 0 || i > 0) 
+					if (j != 0 || p != 0 || i > 0)
 					{
 						chunk->setBlock(Block::Leaves, x + j, y + size - 1 + i, z + p);
 
 					}
 				}
 			}
-			if (muutuja == 3 && i == size / 2 - 2) 
+			if (muutuja == 3 && i == size / 2 - 2)
 			{
 				chunk->setBlock(Block::Air, x + muutuja - 1, y + size - 1 + i, z + muutuja - 1);
 				chunk->setBlock(Block::Air, x - muutuja + 1, y + size - 1 + i, z + muutuja - 1);
