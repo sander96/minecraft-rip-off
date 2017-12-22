@@ -384,7 +384,7 @@ void ChunkMesh::render()
 {
 	glm::mat4 matrix{ 1.0 };
 	matrix = glm::scale(matrix, glm::vec3(0.5));
-	matrix = glm::translate(matrix, glm::vec3(2 * x, 2.0, 2 * z));
+	matrix = glm::translate(matrix, glm::vec3(2.0 * x + 1.0, 1.0, 2.0 * z + 1.0));
 
 	shader_prog& shader = ResourceManager::getInstance().getShaderHandle(Shader::Texture);
 	shader.uniformMatrix4fv("modelMatrix", matrix);

@@ -2,6 +2,7 @@
 #include "../Block/Cube.h"
 #include <stdlib.h>
 
+
 ChunkManager::ChunkManager()
 	:
 	previousPlayerPosition{ glm::vec3(123.0, 0.0, 0.0) },	// to force chunk update
@@ -169,51 +170,31 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 
 void ChunkManager::rayCast(Player& player)
 {
-	if (!concurrencyManager.empty())	// temporary hack to avoid data races
-		return;
-
 	auto playerPosition = player.getPosition();
-	ChunkCoordinate playerChunkCoord{ playerPosition };
 	auto ray = player.getCameraDirection();
-
+	double step = 0.1;
 	int maxDistance = 4;
+	auto trace = glm::vec3(0.0, 0.0, 0.0);
 
-	if (player.addBlockEvent())		// TODO
+	if (player.addBlockEvent() || player.removeBlockEvent())
 	{
-		//std::cout << "Adding a block" << std::endl;	// remove this when removing/adding works
+		int previousX = static_cast<int>(playerPosition.x) % 16;
+		int previousY = static_cast<int>(playerPosition.y) % 256;
+		int previousZ = static_cast<int>(playerPosition.z) % 16;
 
-		//auto& currChunk = chunks.find(playerChunkCoord);
-		////kui kaugule saame blokke panna
-		//int kaugus = 4;
-		////et ei paneks lambist õhku blokki, siis kontroll, et temast tagapool ikka on blokk..
-		//std::cout << ray.x << "," << ray.y << "," << ray.z << std::endl;
-		//int temp = 0;
-		//bool found = false;
-		////kas on kuni kauguseni vaba(et ei paneks teiste blokkide taha, vaid ette)
-		//for (int i = 0; i <= kaugus; i++) {
-		//	if (currChunk->second->getBlock(playerPosition.x + ray.x*i, playerPosition.y + ray.y*i, playerPosition.z + ray.z*i) != Block::Air) {
-		//		temp = i - 1;
-		//		found = true;
-		//	}
-		//}
-		//if (found == true) {
-		//	kaugus = temp;
-		//}
-		////selleks,et lampi õhku ei saaks blokke riputada..
-		//if (currChunk->second->getBlock(playerPosition.x + ray.x*(kaugus + 1), playerPosition.y + ray.y*(kaugus + 1), playerPosition.z + ray.z*(kaugus + 1)) != Block::Air) {
-		//	currChunk->second->setBlock(Block::Stone, playerPosition.x + ray.x*kaugus, playerPosition.y + ray.y*kaugus, playerPosition.z + ray.z*kaugus);
-		//}
-	}
-	else if (player.removeBlockEvent())
-	{
-		//std::cout << std::fixed << ray.x << " " << ray.y << " " << ray.z << std::endl;
-		// not sure how ray tracing works but I use small steps to increment the direction vector; probably not accurate
+		if (previousX < 0)
+		{
+			previousX += 15;
+		}
 
-		double step = 0.1;
+		if (previousZ < 0)
+		{
+			previousZ += 15;
+		}
 
-		auto trace = glm::vec3(0.0, 0.0, 0.0);
+		std::unique_ptr<Chunk>* previousChunk = nullptr;
 
-		for (double c = 1; glm::length(trace) <= maxDistance; c += step)
+		for (double c = 0.0; glm::length(trace) <= maxDistance; c += step)
 		{
 			trace = glm::vec3(ray.x * c, ray.y * c, ray.z * c);
 			auto tracePosition = playerPosition + trace;
@@ -222,16 +203,61 @@ void ChunkManager::rayCast(Player& player)
 
 			if (chunk != nullptr)
 			{
+				if (tracePosition.y < 0 || tracePosition.y >= 256)
+				{
+					continue;
+				}
+
 				int x = static_cast<int>(tracePosition.x) % 16;
 				int y = static_cast<int>(tracePosition.y) % 256;
 				int z = static_cast<int>(tracePosition.z) % 16;
 
-				if ((*chunk)->getBlock(x, y, z) != Block::Air)
+				if (tracePosition.x < 0)
 				{
-					std::cout << "Removing a block" << std::endl;	// remove this when removing/adding works
-					(*chunk)->setBlock(Block::Air, x, y, z);
-					std::cout << x << " " << y << " " << z << std::endl;
-					break;
+					x += 15;
+				}
+
+				if (tracePosition.z < 0)
+				{
+					z += 15;
+				}
+
+				if (player.addBlockEvent())
+				{
+					if (previousX == x && previousY == y && previousZ == z)
+					{
+						continue;
+					}
+
+					if ((*chunk)->getBlock(x, y, z) != Block::Air)
+					{
+						if (previousChunk)
+						{
+							Block currentBlock = player.getCurrentBlock();
+
+							concurrencyManager.addSetBlockTask([previousChunk, currentBlock, previousX, previousY, previousZ]() {
+								(*previousChunk)->setBlock(currentBlock, previousX, previousY, previousZ);
+							});
+						}
+						break;
+					}
+					else
+					{
+						previousX = x;
+						previousY = y;
+						previousZ = z;
+						previousChunk = worldCoordToChunk(tracePosition);
+					}
+				}
+				else
+				{
+					if ((*chunk)->getBlock(x, y, z) != Block::Air)
+					{
+						concurrencyManager.addSetBlockTask([chunk, x, y, z]() {
+							(*chunk)->setBlock(Block::Air, x, y, z);
+						});
+						break;
+					}
 				}
 			}
 		}

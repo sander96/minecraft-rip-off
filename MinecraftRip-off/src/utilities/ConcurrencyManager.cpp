@@ -1,5 +1,4 @@
 #include "ConcurrencyManager.h"
-#include <iostream>
 
 ConcurrencyManager::ConcurrencyManager()
 	:
@@ -23,6 +22,11 @@ void ConcurrencyManager::addChunkMeshTask(std::function<void()> task)
 	chunkMeshTasks.push_back(std::move(task));
 }
 
+void ConcurrencyManager::addSetBlockTask(std::function<void()> task)
+{
+	setBlockTasks.push_back(std::move(task));
+}
+
 void ConcurrencyManager::updateTasks()
 {
 	for (auto it = futures.begin(); it != futures.end();)
@@ -37,8 +41,6 @@ void ConcurrencyManager::updateTasks()
 			it = std::next(it);
 		}
 	}
-
-	//std::cout << tasksActive << std::endl;
 
 	if (futures.empty())
 	{
@@ -64,6 +66,14 @@ void ConcurrencyManager::updateTasks()
 			{
 				futures.emplace_back(threadPool.enqueue(std::move(*it)));
 				it = chunkMeshTasks.erase(it);
+			}
+		}
+		else if (!setBlockTasks.empty())
+		{
+			for (auto it = setBlockTasks.begin(); it != setBlockTasks.end();)
+			{
+				futures.emplace_back(threadPool.enqueue(std::move(*it)));
+				it = setBlockTasks.erase(it);
 			}
 		}
 	}

@@ -15,10 +15,11 @@ public:
 	void addReadTask(std::function<void()> task);
 	void addWriteTask(std::function<void()> task);
 	void addChunkMeshTask(std::function<void()> task);
+	void addSetBlockTask(std::function<void()> task);
 
 	void updateTasks();
 
-	bool empty() { return futures.empty() && readTasks.empty() && writeTasks.empty() && chunkMeshTasks.empty(); }
+	bool empty() { return futures.empty() && readTasks.empty() && writeTasks.empty() && chunkMeshTasks.empty() && setBlockTasks.empty(); }
 
 
 private:
@@ -27,6 +28,7 @@ private:
 	std::list<std::function<void()>> readTasks;
 	std::list<std::function<void()>> writeTasks;
 	std::list<std::function<void()>> chunkMeshTasks;
+	std::list<std::function<void()>> setBlockTasks;
 
 	std::list<std::future<void>> futures;
 };

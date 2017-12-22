@@ -12,6 +12,5 @@ out vec4 fragColor;
 
 void main(void) {
 	vec3 viewerPosition = vec3(0.0);
-	vec3 color = texture2D(tex, interpolatedUv).rgb;
-	fragColor = vec4(color, 1.0);
+	fragColor = texture2D(tex, interpolatedUv);
 }

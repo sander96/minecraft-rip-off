@@ -7,6 +7,7 @@
 #include "../Camera.h"
 #include "../utilities/Settings.h"
 #include <iostream>
+#include "../block/Block.h"
 
 class Player
 {
@@ -21,6 +22,8 @@ public:
 
 	bool removeBlockEvent() { return removeBlock; }
 	bool addBlockEvent() { return addBlock; }
+
+	Block getCurrentBlock() { return currentBlock; }
 
 private:
 	void processMovement(GLFWwindow* window);
@@ -37,6 +40,11 @@ private:
 
 	bool removeBlock = false;
 	bool addBlock = false;
+
+	unsigned int leftMouseDelay = 0;
+	unsigned int rightMouseDelay = 0;
+
+	Block currentBlock = Block::Dirt;
 };
 
 #endif

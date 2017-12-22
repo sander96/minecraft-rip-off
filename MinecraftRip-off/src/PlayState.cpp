@@ -22,7 +22,6 @@ void PlayState::processInput(GLFWwindow* window)
 void PlayState::update(GLFWwindow* window)
 {
 	world.update();
-
 }
 
 void PlayState::render(GLFWwindow* window)
