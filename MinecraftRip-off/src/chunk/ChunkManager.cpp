@@ -98,29 +98,32 @@ void ChunkManager::updateChunks(Player& player)
 std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 {
 	std::unique_ptr<Chunk> chunk = std::make_unique<Chunk>(coordinate.getX() * 16, coordinate.getZ() * 16);
+	int currentNumOfTrees = 0;
 
 	for (int x = 0; x < 16; ++x)
 	{
 		for (int z = 0; z < 16; ++z)
 		{
+			double worldX = (coordinate.getX() * 16.0 + x);
+			double worldZ = (coordinate.getZ() * 16.0 + z);
 			// High frequency noise
-			double i1 = (coordinate.getX() * 16.0 + x) / 16.0;
-			double j1 = (coordinate.getZ() * 16.0 + z) / 16.0;
+			double i1 = worldX / 16.0;
+			double j1 = worldZ / 16.0;
 			double y1 = 15 * perlinNoise.noise(i1, j1, 0.8);
 
 			// Lower frequency noise
-			double i2 = (coordinate.getX() * 16.0 + x) / 64.0;
-			double j2 = (coordinate.getZ() * 16.0 + z) / 64.0;
+			double i2 = worldX / 64.0;
+			double j2 = worldZ / 64.0;
 			double y2 = 40 * perlinNoise.noise(i2, j2, 0.8);
 
 			// Mountains
-			double i3 = (coordinate.getX() * 16.0 + x) / 64.0;
-			double j3 = (coordinate.getZ() * 16.0 + z) / 64.0;
+			double i3 = worldX / 64.0;
+			double j3 = worldZ / 64.0;
 			double y3 = max(0.0, perlinNoise.noise(i3, j3, 0.8) - 0.6) * 100.0;
 
 			// Noise for different biomes
-			double b1 = (coordinate.getX() * 16.0 + x) / 200.0;
-			double b2 = (coordinate.getZ() * 16.0 + z) / 200.0;
+			double b1 = worldX / 200.0;
+			double b2 = worldZ / 200.0;
 			double biomeType = biome.noise(b1, b2, 0.8);
 
 			if (y1 + y2 + y3 < 20)
@@ -139,7 +142,9 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 			{
 				if (biomeType > 0.6)
 				{
-					if (x == 2 && z == 3)
+					int c1 = worldX;
+					int c2 = worldZ;
+					if (y1 + y2 + y3 < 26 && (c1 * c2) % 53 == 12)
 					{
 						createCactus(x, y1 + y2 + y3, z, 5, chunk);
 					}
@@ -151,9 +156,17 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 				}
 				else
 				{
-					if (x == 2 && z == 3 || x == 8 && z == 6)
+					double t1 = worldX / 25.0;
+					double t2 = worldZ / 25.0;
+					double treeNoise = 10.0 * (perlinNoise.noise(t1, t2, 0.8) - 0.5);
+
+					std::vector<int> treeX = {5, 6, 8, 9, 11};
+					std::vector<int> treeZ = {5, 12, 8, 11, 7};
+
+					if (x == treeX[currentNumOfTrees] && z == treeZ[currentNumOfTrees] && currentNumOfTrees < treeNoise)
 					{
-						createTree(x, y1 + y2 + y3, z, chunk);
+						createTree(treeX[currentNumOfTrees], y1 + y2 + y3, treeZ[currentNumOfTrees], chunk);
+						currentNumOfTrees++;
 					}
 
 					for (int i = 0; i < y1 + y2 + y3; i++)
