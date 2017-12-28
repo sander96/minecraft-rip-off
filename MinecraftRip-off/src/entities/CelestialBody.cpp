@@ -11,8 +11,8 @@ CelestialBody::CelestialBody()
 	};
 
 	GLuint indices[] = {
-		0, 1, 2,
-		0, 2, 3
+		1, 0, 2,
+		2, 0, 3
 	};
 
 	glGenVertexArrays(1, &vertexArrayHandle);
@@ -52,30 +52,21 @@ CelestialBody::~CelestialBody()
 
 void CelestialBody::update(glm::vec3 playerPosition)
 {
-	const int constant = 100;	// larger == entity moves slower
-
-	if (tickCounter >= 360 * constant)
+	startDegrees += 0.01;
+	if (startDegrees > 360)
 	{
-		tickCounter = 0;
+		startDegrees = 0.0;
 	}
 
-	float arg = tickCounter * (1.0 / constant);
-	float rad = static_cast<float>(glm::radians(arg + startDegrees));
+	double objY = sin(glm::radians(startDegrees)) * 800.0;
+	double objZ = cos(glm::radians(startDegrees)) * 800.0;
 
-	glm::mat4 matrix{ 1.0 };
-	matrix = glm::rotate(matrix, rad, glm::vec3(0.0, 0.0, 1.0));
+	glm::mat4 transform = glm::mat4(1.0);
+	transform = glm::translate(transform, playerPosition + glm::vec3(0.0, objY, objZ));
+	transform = glm::rotate(transform, glm::radians(-startDegrees), glm::vec3(1.0, 0.0, 0.0));
+	transform = glm::scale(transform, glm::vec3(scale, scale, 1.0));
 
-	glm::vec3 position = playerPosition + glm::vec3(800.0, 0.0, 0.0);
-	matrix = glm::translate(matrix, position);
-
-	matrix = glm::rotate(matrix, static_cast<float>(glm::radians(90.0)), glm::vec3(0.0, 1.0, 0.0));
-	matrix = glm::rotate(matrix, static_cast<float>(glm::radians(180.0)), glm::vec3(1.0, 0.0, 0.0));
-
-	matrix = glm::scale(matrix, glm::vec3(scale, scale, 1.0));
-
-	modelMatrix = matrix;
-
-	++tickCounter;
+	modelMatrix = transform;
 }
 
 void CelestialBody::render()
