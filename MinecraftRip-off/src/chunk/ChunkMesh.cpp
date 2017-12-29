@@ -233,8 +233,8 @@ ChunkMesh& ChunkMesh::operator=(ChunkMesh&& chunkMesh)
 
 void ChunkMesh::generateChunkMesh(std::array<Block, 16 * 16 * 256>& blocks)
 {
-	vertexData.clear();
-	indices.clear();
+	vertexData = std::make_unique<std::vector<GLfloat>>();
+	indices = std::make_unique<std::vector<GLuint>>();
 
 	int x = 0;
 	int y = 0;
@@ -263,90 +263,85 @@ void ChunkMesh::generateChunkMesh(std::array<Block, 16 * 16 * 256>& blocks)
 		{
 			auto uv = calculateUV(blocks[i], Face::Side);
 
-			GLuint bottomLeft = addVertex(vertexData, { x + 1.0f, y + -1.0f, z + 1.0f, uv.first[0], uv.second[1], 1.0f, 0.0f, 0.0f });		// bottom left
-			GLuint bottomRight = addVertex(vertexData, { x + 1.0f, y + -1.0f, z + -1.0f, uv.second[0], uv.second[1], 1.0f, 0.0f, 0.0f });	// bottom right
-			GLuint topRight = addVertex(vertexData, { x + 1.0f, y + 1.0f, z + -1.0f, uv.second[0], uv.first[1], 1.0f, 0.0f, 0.0f });		// top right
-			GLuint topLeft = addVertex(vertexData, { x + 1.0f, y + 1.0f, z + 1.0f, uv.first[0], uv.first[1], 1.0f, 0.0f, 0.0f });			// top left
+			GLuint bottomLeft = addVertex(*vertexData, { x + 1.0f, y + -1.0f, z + 1.0f, uv.first[0], uv.second[1], 1.0f, 0.0f, 0.0f });		// bottom left
+			GLuint bottomRight = addVertex(*vertexData, { x + 1.0f, y + -1.0f, z + -1.0f, uv.second[0], uv.second[1], 1.0f, 0.0f, 0.0f });	// bottom right
+			GLuint topRight = addVertex(*vertexData, { x + 1.0f, y + 1.0f, z + -1.0f, uv.second[0], uv.first[1], 1.0f, 0.0f, 0.0f });		// top right
+			GLuint topLeft = addVertex(*vertexData, { x + 1.0f, y + 1.0f, z + 1.0f, uv.first[0], uv.first[1], 1.0f, 0.0f, 0.0f });			// top left
 
-			indices.insert(indices.end(), { bottomLeft, bottomRight, topRight });
-			indices.insert(indices.end(), { bottomLeft, topRight, topLeft });
+			indices->insert(indices->end(), { bottomLeft, bottomRight, topRight });
+			indices->insert(indices->end(), { bottomLeft, topRight, topLeft });
 		}
 
 		if (!leftFaceCovered(blocks, i))
 		{
 			auto uv = calculateUV(blocks[i], Face::Side);
 
-			GLuint bottomLeft = addVertex(vertexData, { x + -1.0f, y + -1.0f, z + -1.0f, uv.first[0], uv.second[1], -1.0f, 0.0f, 0.0f });	// bottom left
-			GLuint bottomRight = addVertex(vertexData, { x + -1.0f, y + -1.0f, z + 1.0f, uv.second[0], uv.second[1], -1.0f, 0.0f, 0.0f });	// bottom right
-			GLuint topRight = addVertex(vertexData, { x + -1.0f, y + 1.0f, z + 1.0f, uv.second[0], uv.first[1], -1.0f, 0.0f, 0.0f });		// top right
-			GLuint topLeft = addVertex(vertexData, { x + -1.0f, y + 1.0f, z + -1.0f, uv.first[0], uv.first[1], -1.0f, 0.0f, 0.0f });		// top left
+			GLuint bottomLeft = addVertex(*vertexData, { x + -1.0f, y + -1.0f, z + -1.0f, uv.first[0], uv.second[1], -1.0f, 0.0f, 0.0f });	// bottom left
+			GLuint bottomRight = addVertex(*vertexData, { x + -1.0f, y + -1.0f, z + 1.0f, uv.second[0], uv.second[1], -1.0f, 0.0f, 0.0f });	// bottom right
+			GLuint topRight = addVertex(*vertexData, { x + -1.0f, y + 1.0f, z + 1.0f, uv.second[0], uv.first[1], -1.0f, 0.0f, 0.0f });		// top right
+			GLuint topLeft = addVertex(*vertexData, { x + -1.0f, y + 1.0f, z + -1.0f, uv.first[0], uv.first[1], -1.0f, 0.0f, 0.0f });		// top left
 
-			indices.insert(indices.end(), { bottomLeft, bottomRight, topRight });
-			indices.insert(indices.end(), { bottomLeft, topRight, topLeft });
+			indices->insert(indices->end(), { bottomLeft, bottomRight, topRight });
+			indices->insert(indices->end(), { bottomLeft, topRight, topLeft });
 		}
 
 		if (!frontFaceCovered(blocks, i))
 		{
 			auto uv = calculateUV(blocks[i], Face::Side);
 
-			GLuint bottomLeft = addVertex(vertexData, { x + -1.0f, y + -1.0f, z + 1.0f, uv.first[0], uv.second[1], 0.0f, 0.0f, 1.0f });		// bottom left
-			GLuint bottomRight = addVertex(vertexData, { x + 1.0f, y + -1.0f, z + 1.0f, uv.second[0], uv.second[1], 0.0f, 0.0f, 1.0f });	// bottom right
-			GLuint topRight = addVertex(vertexData, { x + 1.0f, y + 1.0f, z + 1.0f, uv.second[0], uv.first[1], 0.0f, 0.0f, 1.0f });			// top right
-			GLuint topLeft = addVertex(vertexData, { x + -1.0f, y + 1.0f, z + 1.0f, uv.first[0], uv.first[1], 0.0f, 0.0f, 1.0f });			// top left
+			GLuint bottomLeft = addVertex(*vertexData, { x + -1.0f, y + -1.0f, z + 1.0f, uv.first[0], uv.second[1], 0.0f, 0.0f, 1.0f });		// bottom left
+			GLuint bottomRight = addVertex(*vertexData, { x + 1.0f, y + -1.0f, z + 1.0f, uv.second[0], uv.second[1], 0.0f, 0.0f, 1.0f });	// bottom right
+			GLuint topRight = addVertex(*vertexData, { x + 1.0f, y + 1.0f, z + 1.0f, uv.second[0], uv.first[1], 0.0f, 0.0f, 1.0f });			// top right
+			GLuint topLeft = addVertex(*vertexData, { x + -1.0f, y + 1.0f, z + 1.0f, uv.first[0], uv.first[1], 0.0f, 0.0f, 1.0f });			// top left
 
-			indices.insert(indices.end(), { bottomLeft, bottomRight, topRight });
-			indices.insert(indices.end(), { bottomLeft, topRight, topLeft });
+			indices->insert(indices->end(), { bottomLeft, bottomRight, topRight });
+			indices->insert(indices->end(), { bottomLeft, topRight, topLeft });
 		}
 
 		if (!backFaceCovered(blocks, i))
 		{
 			auto uv = calculateUV(blocks[i], Face::Side);
 
-			GLuint bottomLeft = addVertex(vertexData, { x + 1.0f, y + -1.0f, z + -1.0f, uv.first[0], uv.second[1], 0.0f, 0.0f, -1.0f });	// bottom left
-			GLuint bottomRight = addVertex(vertexData, { x + -1.0f, y + -1.0f, z + -1.0f, uv.second[0], uv.second[1], 0.0f, 0.0f, -1.0f });	// bottom right
-			GLuint topRight = addVertex(vertexData, { x + -1.0f, y + 1.0f, z + -1.0f, uv.second[0], uv.first[1], 0.0f, 0.0f, -1.0f });		// top right
-			GLuint topLeft = addVertex(vertexData, { x + 1.0f, y + 1.0f, z + -1.0f, uv.first[0], uv.first[1], 0.0f, 0.0f, -1.0f });			// top left
+			GLuint bottomLeft = addVertex(*vertexData, { x + 1.0f, y + -1.0f, z + -1.0f, uv.first[0], uv.second[1], 0.0f, 0.0f, -1.0f });	// bottom left
+			GLuint bottomRight = addVertex(*vertexData, { x + -1.0f, y + -1.0f, z + -1.0f, uv.second[0], uv.second[1], 0.0f, 0.0f, -1.0f });	// bottom right
+			GLuint topRight = addVertex(*vertexData, { x + -1.0f, y + 1.0f, z + -1.0f, uv.second[0], uv.first[1], 0.0f, 0.0f, -1.0f });		// top right
+			GLuint topLeft = addVertex(*vertexData, { x + 1.0f, y + 1.0f, z + -1.0f, uv.first[0], uv.first[1], 0.0f, 0.0f, -1.0f });			// top left
 
-			indices.insert(indices.end(), { bottomLeft, bottomRight, topRight });
-			indices.insert(indices.end(), { bottomLeft, topRight, topLeft });
+			indices->insert(indices->end(), { bottomLeft, bottomRight, topRight });
+			indices->insert(indices->end(), { bottomLeft, topRight, topLeft });
 		}
 
 		if (!topFaceCovered(blocks, i))
 		{
 			auto uv = calculateUV(blocks[i], Face::Top);
 
-			GLuint bottomLeft = addVertex(vertexData, { x + -1.0f, y + 1.0f, z + 1.0f, uv.first[0], uv.second[1], 0.0f, 1.0f, 0.0f });		// bottom left
-			GLuint bottomRight = addVertex(vertexData, { x + 1.0f, y + 1.0f, z + 1.0f, uv.second[0], uv.second[1], 0.0f, 1.0f, 0.0f });		// bottom right
-			GLuint topRight = addVertex(vertexData, { x + 1.0f, y + 1.0f, z + -1.0f, uv.second[0], uv.first[1], 0.0f, 1.0f, 0.0f });		// top right
-			GLuint topLeft = addVertex(vertexData, { x + -1.0f, y + 1.0f, z + -1.0f, uv.first[0], uv.first[1], 0.0f, 1.0f, 0.0f });			// top left
+			GLuint bottomLeft = addVertex(*vertexData, { x + -1.0f, y + 1.0f, z + 1.0f, uv.first[0], uv.second[1], 0.0f, 1.0f, 0.0f });		// bottom left
+			GLuint bottomRight = addVertex(*vertexData, { x + 1.0f, y + 1.0f, z + 1.0f, uv.second[0], uv.second[1], 0.0f, 1.0f, 0.0f });		// bottom right
+			GLuint topRight = addVertex(*vertexData, { x + 1.0f, y + 1.0f, z + -1.0f, uv.second[0], uv.first[1], 0.0f, 1.0f, 0.0f });		// top right
+			GLuint topLeft = addVertex(*vertexData, { x + -1.0f, y + 1.0f, z + -1.0f, uv.first[0], uv.first[1], 0.0f, 1.0f, 0.0f });			// top left
 
-			indices.insert(indices.end(), { bottomLeft, bottomRight, topRight });
-			indices.insert(indices.end(), { bottomLeft, topRight, topLeft });
+			indices->insert(indices->end(), { bottomLeft, bottomRight, topRight });
+			indices->insert(indices->end(), { bottomLeft, topRight, topLeft });
 		}
 
 		if (!bottomFaceCovered(blocks, i))
 		{
 			auto uv = calculateUV(blocks[i], Face::Bottom);
 
-			GLuint bottomLeft = addVertex(vertexData, { x + -1.0f, y + -1.0f, z + -1.0f, uv.first[0], uv.second[1], 0.0f, -1.0f, 0.0f });	// bottom left
-			GLuint bottomRight = addVertex(vertexData, { x + 1.0f, y + -1.0f, z + -1.0f, uv.second[0], uv.second[1], 0.0f, -1.0f, 0.0f });	// bottom right
-			GLuint topRight = addVertex(vertexData, { x + 1.0f, y + -1.0f, z + 1.0f, uv.second[0], uv.first[1], 0.0f, -1.0f, 0.0f });		// top right
-			GLuint topLeft = addVertex(vertexData, { x + -1.0f, y + -1.0f, z + 1.0f, uv.first[0], uv.first[1], 0.0f, -1.0f, 0.0f });		// top left
+			GLuint bottomLeft = addVertex(*vertexData, { x + -1.0f, y + -1.0f, z + -1.0f, uv.first[0], uv.second[1], 0.0f, -1.0f, 0.0f });	// bottom left
+			GLuint bottomRight = addVertex(*vertexData, { x + 1.0f, y + -1.0f, z + -1.0f, uv.second[0], uv.second[1], 0.0f, -1.0f, 0.0f });	// bottom right
+			GLuint topRight = addVertex(*vertexData, { x + 1.0f, y + -1.0f, z + 1.0f, uv.second[0], uv.first[1], 0.0f, -1.0f, 0.0f });		// top right
+			GLuint topLeft = addVertex(*vertexData, { x + -1.0f, y + -1.0f, z + 1.0f, uv.first[0], uv.first[1], 0.0f, -1.0f, 0.0f });		// top left
 
-			indices.insert(indices.end(), { bottomLeft, bottomRight, topRight });
-			indices.insert(indices.end(), { bottomLeft, topRight, topLeft });
+			indices->insert(indices->end(), { bottomLeft, bottomRight, topRight });
+			indices->insert(indices->end(), { bottomLeft, topRight, topLeft });
 		}
 	}
-
-	//std::cout << "Vertices count: " << vertexData.size() / 8 << std::endl;
-	//std::cout << "Triangle count: " << indices.size() / 3 << std::endl;
-
-	indicesCount = indices.size();
 }
 
 void ChunkMesh::updateChunkMesh(bool& renderLocked)
 {
-	if (vertexData.empty() || indices.empty())
+	if (vertexData->empty() || indices->empty())
 	{
 		renderLocked = true;
 		return;
@@ -357,11 +352,11 @@ void ChunkMesh::updateChunkMesh(bool& renderLocked)
 
 	glGenBuffers(1, &arrayBufferHandle);
 	glBindBuffer(GL_ARRAY_BUFFER, arrayBufferHandle);
-	glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(float), &vertexData[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertexData->size() * sizeof(float), &(*vertexData)[0], GL_STATIC_DRAW);
 
 	glGenBuffers(1, &indicesHandle);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesHandle);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(float), &indices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices->size() * sizeof(float), &(*indices)[0], GL_STATIC_DRAW);
 
 	shader_prog& shader = ResourceManager::getInstance().getShaderHandle(Shader::Texture);
 
@@ -378,6 +373,10 @@ void ChunkMesh::updateChunkMesh(bool& renderLocked)
 	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (const GLvoid*)(5 * sizeof(float)));
 
 	glBindVertexArray(0);
+
+	indicesCount = indices->size();
+	vertexData.reset();
+	indices.reset();
 }
 
 void ChunkMesh::render()

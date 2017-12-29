@@ -31,8 +31,8 @@ private:
 	GLuint indicesHandle;
 	GLsizei indicesCount;
 
-	std::vector<GLfloat> vertexData;
-	std::vector<GLuint> indices;
+	std::unique_ptr<std::vector<GLfloat>> vertexData;
+	std::unique_ptr<std::vector<GLuint>> indices;
 
 	int x;
 	int z;
