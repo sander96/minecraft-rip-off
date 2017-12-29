@@ -126,6 +126,13 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 			double b2 = worldZ / 200.0;
 			double biomeType = biome.noise(b1, b2, 0.8);
 
+			double cl1 = worldX / 50.0;
+			double cl2 = worldZ / 50.0;
+			double clx = 10 * perlinNoise.noise(cl1,cl2, 0.8);
+			if (clx * 2 > 13) {
+				int cl_height = 125;
+				createCloud(clx, cl_height,clx,16, chunk);
+			}
 			if (y1 + y2 + y3 < 20)
 			{
 				for (int i = y1 + y2 + y3; i <= 20; i++)
@@ -292,6 +299,15 @@ std::unique_ptr<Chunk>* ChunkManager::worldCoordToChunk(glm::vec3 worldCoordinat
 	return &(iterator->second);
 }
 
+//veel mingi veider bug sees, kus osad pilve osad kõrgemal..
+void ChunkManager::createCloud(int x, int y, int z, int size, const std::unique_ptr<Chunk>& chunk) {
+	for (int i = 0;i < size;i++) {
+		for (int j = 0;j < size;j++) {
+			chunk->setBlock(Block::Cloud, x + j, y, z + i);
+		}
+	}
+}
+
 void ChunkManager::createCactus(int x, int y, int z, int size, const std::unique_ptr<Chunk>& chunk)
 {
 	for (int i = 1; i < size + 1; i++)
@@ -310,19 +326,19 @@ void ChunkManager::createTree(int x, int y, int z, const std::unique_ptr<Chunk>&
 		chunk->setBlock(Block::Wood, x, y + i, z);
 	}
 	//lehed ümber?
-	int muutuja = 2;
+	int var = 2;
 	if (size > 5) {
-		muutuja = 3;
+		var = 3;
 	}
 	for (int i = 0; i < size / 2 + 1; i++)
 	{
 		if (i == size / 2 - 1)
 		{
-			muutuja = 2;
+			var = 2;
 		}
 		if (i == size / 2)
 		{
-			for (int p = -muutuja + 1; p < muutuja; p++)
+			for (int p = -var + 1; p < var; p++)
 			{
 				chunk->setBlock(Block::Leaves, x, y + size - 1 + i, z + p);
 				chunk->setBlock(Block::Leaves, x + p, y + size - 1 + i, z);
@@ -330,9 +346,9 @@ void ChunkManager::createTree(int x, int y, int z, const std::unique_ptr<Chunk>&
 		}
 		else
 		{
-			for (int j = -muutuja + 1; j < muutuja; j++)
+			for (int j = -var + 1; j < var; j++)
 			{
-				for (int p = -muutuja + 1; p < muutuja; p++)
+				for (int p = -var + 1; p < var; p++)
 				{
 					if (j != 0 || p != 0 || i > 0)
 					{
@@ -341,12 +357,12 @@ void ChunkManager::createTree(int x, int y, int z, const std::unique_ptr<Chunk>&
 					}
 				}
 			}
-			if (muutuja == 3 && i == size / 2 - 2)
+			if (var == 3 && i == size / 2 - 2)
 			{
-				chunk->setBlock(Block::Air, x + muutuja - 1, y + size - 1 + i, z + muutuja - 1);
-				chunk->setBlock(Block::Air, x - muutuja + 1, y + size - 1 + i, z + muutuja - 1);
-				chunk->setBlock(Block::Air, x + muutuja - 1, y + size - 1 + i, z - muutuja + 1);
-				chunk->setBlock(Block::Air, x - muutuja + 1, y + size - 1 + i, z - muutuja + 1);
+				chunk->setBlock(Block::Air, x + var - 1, y + size - 1 + i, z + var - 1);
+				chunk->setBlock(Block::Air, x - var+ 1, y + size - 1 + i, z + var - 1);
+				chunk->setBlock(Block::Air, x + var - 1, y + size - 1 + i, z - var + 1);
+				chunk->setBlock(Block::Air, x - var + 1, y + size - 1 + i, z - var + 1);
 			}
 		}
 	}

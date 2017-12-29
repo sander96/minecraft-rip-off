@@ -28,6 +28,7 @@ private:
 
 	std::unique_ptr<Chunk>* worldCoordToChunk(glm::vec3 worldCoordinate);
 
+	void ChunkManager::createCloud(int x, int y, int z, int size, const std::unique_ptr<Chunk>& chunk);
 	void ChunkManager::createCactus(int x, int y, int z, int size, const std::unique_ptr<Chunk>& chunk);
 	void ChunkManager::createTree(int x, int y, int z, const std::unique_ptr<Chunk>& chunk);
 
