@@ -19,7 +19,6 @@ void ChunkManager::updateChunks(Player& player)
 
 	if (playerChunkCoord != previousPlayerPosition)		// true if player entered to a new chunk
 	{
-		std::cout << "Player entered to a new chunk" << std::endl;	// debugging info
 		std::multimap<ChunkCoordinate, std::unique_ptr<Chunk>> newChunks;
 
 		for (auto& pair : chunks)
@@ -126,13 +125,6 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 			double b2 = worldZ / 200.0;
 			double biomeType = biome.noise(b1, b2, 0.8);
 
-			double cl1 = worldX / 50.0;
-			double cl2 = worldZ / 50.0;
-			double clx = 10 * perlinNoise.noise(cl1,cl2, 0.8);
-			if (clx * 2 > 13) {
-				int cl_height = 125;
-				createCloud(clx, cl_height,clx,16, chunk);
-			}
 			if (y1 + y2 + y3 < 20)
 			{
 				for (int i = y1 + y2 + y3; i <= 20; i++)
@@ -153,7 +145,7 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 					int c2 = worldZ;
 					if (y1 + y2 + y3 < 26 && (c1 * c2) % 53 == 12)
 					{
-						createCactus(x, y1 + y2 + y3, z, 5, chunk);
+						createCactus(x, y1 + y2 + y3, z, chunk);
 					}
 
 					for (int i = 0; i <= y1 + y2 + y3; i++)
@@ -167,8 +159,8 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 					double t2 = worldZ / 25.0;
 					double treeNoise = 10.0 * (perlinNoise.noise(t1, t2, 0.8) - 0.5);
 
-					std::vector<int> treeX = {5, 6, 8, 9, 11};
-					std::vector<int> treeZ = {5, 12, 8, 11, 7};
+					std::vector<int> treeX = { 5, 6, 8, 9, 11 };
+					std::vector<int> treeZ = { 5, 12, 8, 11, 7 };
 
 					if (x == treeX[currentNumOfTrees] && z == treeZ[currentNumOfTrees] && currentNumOfTrees < treeNoise)
 					{
@@ -183,8 +175,19 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 					chunk->setBlock(Block::Grass, x, y1 + y2 + y3, z);
 				}
 			}
+
+			// Clouds
+			double cl1 = worldX / 50.0;
+			double cl2 = worldZ / 50.0;
+			double clx = 20 * perlinNoise.noise(cl1, cl2, 0.8);
+
+			if (clx > 13)
+			{
+				createCloud(chunk);
+			}
 		}
 	}
+
 	return chunk;
 }
 
@@ -299,18 +302,20 @@ std::unique_ptr<Chunk>* ChunkManager::worldCoordToChunk(glm::vec3 worldCoordinat
 	return &(iterator->second);
 }
 
-//veel mingi veider bug sees, kus osad pilve osad kõrgemal..
-void ChunkManager::createCloud(int x, int y, int z, int size, const std::unique_ptr<Chunk>& chunk) {
-	for (int i = 0;i < size;i++) {
-		for (int j = 0;j < size;j++) {
-			chunk->setBlock(Block::Cloud, x + j, y, z + i);
+void ChunkManager::createCloud(const std::unique_ptr<Chunk>& chunk)
+{
+	for (int i = 0; i < 16; ++i)
+	{
+		for (int j = 0; j < 16; ++j)
+		{
+			chunk->setBlock(Block::Cloud, j, 100, i);
 		}
 	}
 }
 
-void ChunkManager::createCactus(int x, int y, int z, int size, const std::unique_ptr<Chunk>& chunk)
+void ChunkManager::createCactus(int x, int y, int z, const std::unique_ptr<Chunk>& chunk)
 {
-	for (int i = 1; i < size + 1; i++)
+	for (int i = 1; i < 6; ++i)
 	{
 		chunk->setBlock(Block::Cactus, x, y + i, z);
 	}
@@ -318,27 +323,30 @@ void ChunkManager::createCactus(int x, int y, int z, int size, const std::unique
 
 void ChunkManager::createTree(int x, int y, int z, const std::unique_ptr<Chunk>& chunk)
 {
-	//SIZE peab olema kuidagi seotud noisega, siis suvalise suurusega puud..
-	int size = 5 + y % 4;
-	//tüvi
-	for (int i = 1; i < size + 1; i++)
+	int size = y % 4 + 5;
+
+	for (int i = 1; i <= size; i++)
 	{
 		chunk->setBlock(Block::Wood, x, y + i, z);
 	}
-	//lehed ümber?
-	int var = 2;
-	if (size > 5) {
-		var = 3;
+
+	int radius = 2;
+
+	if (size > 5) 
+	{
+		radius = 3;
 	}
-	for (int i = 0; i < size / 2 + 1; i++)
+
+	for (int i = 0; i <= size / 2; i++)
 	{
 		if (i == size / 2 - 1)
 		{
-			var = 2;
+			radius = 2;
 		}
+
 		if (i == size / 2)
 		{
-			for (int p = -var + 1; p < var; p++)
+			for (int p = -radius + 1; p < radius; p++)
 			{
 				chunk->setBlock(Block::Leaves, x, y + size - 1 + i, z + p);
 				chunk->setBlock(Block::Leaves, x + p, y + size - 1 + i, z);
@@ -346,23 +354,23 @@ void ChunkManager::createTree(int x, int y, int z, const std::unique_ptr<Chunk>&
 		}
 		else
 		{
-			for (int j = -var + 1; j < var; j++)
+			for (int j = -radius + 1; j < radius; j++)
 			{
-				for (int p = -var + 1; p < var; p++)
+				for (int p = -radius + 1; p < radius; p++)
 				{
 					if (j != 0 || p != 0 || i > 0)
 					{
 						chunk->setBlock(Block::Leaves, x + j, y + size - 1 + i, z + p);
-
 					}
 				}
 			}
-			if (var == 3 && i == size / 2 - 2)
+
+			if (radius == 3 && i == size / 2 - 2)
 			{
-				chunk->setBlock(Block::Air, x + var - 1, y + size - 1 + i, z + var - 1);
-				chunk->setBlock(Block::Air, x - var+ 1, y + size - 1 + i, z + var - 1);
-				chunk->setBlock(Block::Air, x + var - 1, y + size - 1 + i, z - var + 1);
-				chunk->setBlock(Block::Air, x - var + 1, y + size - 1 + i, z - var + 1);
+				chunk->setBlock(Block::Air, x + radius - 1, y + size - 1 + i, z + radius - 1);
+				chunk->setBlock(Block::Air, x - radius + 1, y + size - 1 + i, z + radius - 1);
+				chunk->setBlock(Block::Air, x + radius - 1, y + size - 1 + i, z - radius + 1);
+				chunk->setBlock(Block::Air, x - radius + 1, y + size - 1 + i, z - radius + 1);
 			}
 		}
 	}
