@@ -308,7 +308,10 @@ void ChunkManager::createCloud(const std::unique_ptr<Chunk>& chunk)
 	{
 		for (int j = 0; j < 16; ++j)
 		{
+			chunk->setBlock(Block::Cloud, j, 99, i);
 			chunk->setBlock(Block::Cloud, j, 100, i);
+			chunk->setBlock(Block::Cloud, j, 101, i);
+			chunk->setBlock(Block::Cloud, j, 102, i);
 		}
 	}
 }
