@@ -1,5 +1,4 @@
 #include "Camera.h"
-#include <iostream>
 #include "utilities/Settings.h"
 
 Camera::Camera()

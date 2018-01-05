@@ -1,6 +1,7 @@
+#define NOMINMAX
+
 #include "ChunkManager.h"
-#include "../Block/Cube.h"
-#include <stdlib.h>
+#include <algorithm>
 
 
 ChunkManager::ChunkManager()
@@ -118,7 +119,7 @@ std::unique_ptr<Chunk> ChunkManager::createChunk(ChunkCoordinate coordinate)
 			// Mountains
 			double i3 = worldX / 64.0;
 			double j3 = worldZ / 64.0;
-			double y3 = max(0.0, perlinNoise.noise(i3, j3, 0.8) - 0.6) * 100.0;
+			double y3 = std::max(0.0, perlinNoise.noise(i3, j3, 0.8) - 0.6) * 100.0;
 
 			// Noise for different biomes
 			double b1 = worldX / 200.0;

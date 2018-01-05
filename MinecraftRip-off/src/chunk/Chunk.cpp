@@ -1,6 +1,4 @@
 #include "Chunk.h"
-#include "../Block/Cube.h"
-#include <iostream>
 #include <fstream>
 #include <filesystem>
 

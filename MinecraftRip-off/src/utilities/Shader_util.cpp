@@ -161,11 +161,8 @@ void shader_prog::attribute3fv(const char* name, GLfloat* vecArray, int numberOf
 	glBindBuffer(GL_ARRAY_BUFFER, vboHandle);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*numberOfVertices, vecArray, GL_STATIC_DRAW);
 
-	GLuint loc = glGetAttribLocation(prog, name);
-	if (loc < 0) throw (std::runtime_error(std::string("Location not found in shader program for variable ") + name));
+	GLint loc = glGetAttribLocation(prog, name);
 	glEnableVertexAttribArray(loc);
-
-	//printf("Enabled location: %d\n", loc);
 
 	glVertexAttribPointer(
 		loc, // attribute
@@ -182,11 +179,8 @@ GLuint shader_prog::attributeVectorVec3(const char* name, std::vector<glm::vec3>
 	glBindBuffer(GL_ARRAY_BUFFER, vboHandle);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vectorVec3.size() * 3, &vectorVec3[0], GL_STATIC_DRAW);
 
-	GLuint loc = glGetAttribLocation(prog, name);
-	if (loc < 0) throw (std::runtime_error(std::string("Location not found in shader program for variable ") + name));
+	GLint loc = glGetAttribLocation(prog, name);
 	glEnableVertexAttribArray(loc);
-
-	std::cout << name << ": " << loc << std::endl;
 
 	glVertexAttribPointer(
 		loc, // attribute

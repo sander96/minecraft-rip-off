@@ -4,7 +4,6 @@
 #include <iostream>
 #include "utilities/Settings.h"
 #include "block/Block.h"
-#include "block/Cube.h"
 
 PlayState::PlayState(GLFWwindow* window)
 	: world{ window }

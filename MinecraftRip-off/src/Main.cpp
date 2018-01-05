@@ -9,10 +9,12 @@ int main()
 	GLFWwindow* window;
 
 	if (!glfwInit())
+	{
 		return -1;
+	}
 
 	Settings settings;
-	window = glfwCreateWindow(settings.getWidth(), settings.getHeight(), "Minecraft rip-off", NULL, NULL);
+	window = glfwCreateWindow(settings.getWidth(), settings.getHeight(), "Minecraft rip-off", nullptr, nullptr);
 
 	if (!window)
 	{
