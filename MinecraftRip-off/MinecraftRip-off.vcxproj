@@ -130,6 +130,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\DEVIL\lib\x86\Release;$(SolutionDir)lib\GLFW\lib-vc2015;$(SolutionDir)lib\GLEW\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;glew32s.lib;opengl32.lib;DevIL.lib;ILU.lib;ILUT.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/SUBSYSTEM:windows
+/ENTRY:mainCRTStartup %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PostBuildEvent>
       <Command>XCOPY "$(SolutionDir)"\lib\DEVIL\lib\x86\Release\*.DLL "$(TargetDir)" /D /K /Y</Command>
