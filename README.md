@@ -19,6 +19,8 @@ You need:
 4. Set `Solution Configuration` to `Release` and `Solution Platforms` to `x86`.
 5. `CTRL + F5` to run.
 
+### Settings
+**resources/settings.cfg** includes some basic settings that can be changed. These are *width*, *height*, *fov*, *mouse sensitivity*, *view distance* and *chunk radius*. Please note that if the game crashes, it is because the *chunk-radius* is too large. This is because the program has a limited address space available (2GB).
 
 ## Gameplay
 ### Controls
